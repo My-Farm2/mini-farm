@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -5,7 +6,6 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#4f8537">
 <title>Mini Farm 2D</title>
-
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#dceecb;color:#263b20;font-family:system-ui,sans-serif}
@@ -24,7 +24,7 @@ main{max-width:900px;margin:auto;padding:12px}
 }
 .path{position:absolute;top:48%;height:55px;left:0;right:0;background:#c6a36c;border-block:5px solid #a78352}
 .fieldgrid{
- position:absolute;inset:12px 10px 70px;
+ position:absolute;inset:12px 10px 100px;
  display:grid;grid-template-columns:repeat(5,1fr);
  grid-template-rows:repeat(2,1fr);gap:9px
 }
@@ -40,17 +40,27 @@ main{max-width:900px;margin:auto;padding:12px}
 .plot.grass{background:repeating-linear-gradient(0deg,#79b64b 0 8px,#6da341 8px 12px);border-color:#4c7934}
 .plot.selected{outline:4px solid #ffe052;outline-offset:1px}
 .crop{font-size:clamp(19px,4vw,28px)}
-
 .vehicle{
  position:absolute;z-index:4;width:115px;height:65px;
- transition:left .6s,top .6s;
+ transition:left .6s,top .6s,bottom .6s;
  filter:drop-shadow(2px 3px 1px #42652d);
  pointer-events:none
 }
 .vehicle svg{width:100%;height:100%;overflow:visible}
 #tractor{left:2%;top:5%}
-#combine{left:2%;top:20%;width:120px;height:65px}
-
+#combine{left:2%;top:20%;width:145px;height:106px}
+.parking{
+ position:absolute;left:0;right:0;bottom:0;height:78px;
+ background:#b58d58;border-top:5px solid #8b693f;
+ display:flex;align-items:center;justify-content:space-around;
+ z-index:2;padding:5px
+}
+.parking-slot{
+ width:42%;height:58px;border:3px dashed #725333;
+ border-radius:9px;background:#d5b47e;color:#614727;
+ font-weight:800;font-size:12px;display:flex;
+ align-items:center;justify-content:center;text-align:center
+}
 .controls,.shop{
  background:white;border-radius:15px;padding:13px;
  margin-top:12px;box-shadow:0 3px #c3d8ae
@@ -67,16 +77,14 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 .bar{height:100%;width:0;background:#70a943}
 .note{font-size:13px;color:#607653;margin:7px 0 0}
 .vehicle-info{font-size:13px;background:#edf4e7;padding:8px;border-radius:8px;margin-top:8px}
-
 @media(max-width:520px){
- .fieldgrid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(5,1fr);inset:10px 8px 65px}
+ .fieldgrid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(5,1fr);inset:10px 8px 100px}
  .world{height:650px}
  .vehicle{width:95px;height:55px}
- #combine{width:100px;height:55px}
+ #combine{width:120px;height:88px}
 }
 </style>
 </head>
-
 <body>
 <header>
 <h1>🚜 Meine Mini Farm</h1>
@@ -86,11 +94,9 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 <span>🌱 <b id="planted">0</b> bepflanzt</span>
 </div>
 </header>
-
 <main>
 <div class="scene">
 <div class="sky"><span>☀️ Sonnental</span><span>2D FARM</span></div>
-
 <div class="world" id="world">
 <div class="path"></div>
 <div class="fieldgrid" id="fieldgrid"></div>
@@ -114,21 +120,41 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 </svg>
 </div>
 
-<!-- Mähdrescher -->
+<!-- Neuer Mähdrescher, nach rechts gedreht -->
 <div class="vehicle" id="combine" aria-label="Mähdrescher">
-<svg viewBox="0 0 155 75">
-<circle cx="48" cy="59" r="13" fill="#292d2b"/>
-<circle cx="48" cy="59" r="6" fill="#aeb5ad"/>
-<circle cx="112" cy="59" r="9" fill="#292d2b"/>
-<circle cx="112" cy="59" r="4" fill="#aeb5ad"/>
-<path d="M23 31 H116 L125 53 H20 Z" fill="#d9b72b" stroke="#806c17" stroke-width="3"/>
-<path d="M70 7 H102 L110 32 H66 Z" fill="#e5c637" stroke="#806c17" stroke-width="3"/>
-<path d="M75 12 H97 L103 27 H72 Z" fill="#9dd4e4" stroke="#486b70" stroke-width="2"/>
-<rect x="20" y="35" width="105" height="9" rx="2" fill="#e8ca3d"/>
-<path d="M19 47 L0 55 L4 65 L26 59" fill="#777d79" stroke="#343a32" stroke-width="2"/>
-<path d="M0 55 L25 55 M3 61 L27 61" stroke="#343a32" stroke-width="2"/>
-<rect x="114" y="29" width="8" height="8" fill="#fff2a8"/>
+<svg viewBox="0 0 600 440" role="img" aria-label="Gelber Mähdrescher">
+<g stroke="#080808" stroke-width="13" stroke-linejoin="round" stroke-linecap="round">
+<path d="M290 90 L290 40 Q290 18 315 18 H515 L570 48 L552 75 L510 55 H320 V90" fill="#f5a900"/>
+<path d="M80 270 H500 V350 Q500 385 470 385 H90 Q65 385 65 355 V295 Z" fill="#303030"/>
+<path d="M115 270 H490 V365 H110 Z" fill="#e8a52c"/>
+<circle cx="220" cy="340" r="82" fill="#242424" stroke-width="17"/>
+<circle cx="220" cy="340" r="38" fill="#bfc3c0" stroke-width="12"/>
+<circle cx="430" cy="355" r="52" fill="#242424" stroke-width="14"/>
+<circle cx="430" cy="355" r="23" fill="#bfc3c0" stroke-width="10"/>
+<path d="M420 80 H555 L525 205 H420 Z" fill="#f2ca35"/>
+<path d="M450 110 H535 L515 180 H450 Z" fill="#54b6d5" stroke-width="10"/>
+<path d="M125 80 H420 L450 125 H110 Z" fill="#333333"/>
+<path d="M70 125 H420 V235 L70 260 Z" fill="#e3c443"/>
+<path d="M70 235 L420 205 L445 260 L175 300 L90 275 Z" fill="#e3c443"/>
+<path d="M535 285 L590 325 V390 H510 V300 Z" fill="#e5bf35"/>
+<path d="M510 300 L590 355" fill="none" stroke="#f5a900" stroke-width="9"/>
+<path d="M85 125 H205 V250 H105 Z" fill="#e9a52c"/>
+<path d="M100 145 H185 V230 H115 Z" fill="#55b3d0"/>
+<path d="M210 85 H420" fill="none" stroke="#080808" stroke-width="8"/>
+<path d="M110 260 Q160 250 220 270" fill="none" stroke="#080808" stroke-width="9"/>
+<circle cx="255" cy="150" r="7" fill="#080808" stroke="none"/>
+<circle cx="390" cy="150" r="7" fill="#080808" stroke="none"/>
+<circle cx="390" cy="230" r="7" fill="#080808" stroke="none"/>
+<circle cx="120" cy="350" r="6" fill="#080808" stroke="none"/>
+<circle cx="490" cy="350" r="6" fill="#080808" stroke="none"/>
+</g>
 </svg>
+</div>
+
+<!-- Parkplatz -->
+<div class="parking">
+<div class="parking-slot">🚜 Traktor-Parkplatz</div>
+<div class="parking-slot">🌾 Mähdrescher-Parkplatz</div>
 </div>
 </div>
 </div>
@@ -143,15 +169,17 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 <div class="row">
 <button onclick="driveTractor()">🚜 Traktor zum Feld fahren</button>
 <button onclick="plow()">🌱 Pflügen starten (15 s)</button>
+<button class="alt" onclick="parkTractor()">🅿️ Traktor parken</button>
 </div>
-<div class="vehicle-info" id="tractorInfo">Traktor steht bei Feld 1.</div>
+<div class="vehicle-info" id="tractorInfo">Traktor steht auf seinem Parkplatz.</div>
 
 <h3>🌾 Mähdrescher steuern</h3>
 <div class="row">
 <button onclick="driveCombine()">🌾 Mähdrescher zum Feld fahren</button>
 <button onclick="harvest()">🌾 Ernte starten</button>
+<button class="alt" onclick="parkCombine()">🅿️ Mähdrescher parken</button>
 </div>
-<div class="vehicle-info" id="combineInfo">Mähdrescher steht bei Feld 1.</div>
+<div class="vehicle-info" id="combineInfo">Mähdrescher steht auf seinem Parkplatz.</div>
 
 <div class="row" style="margin-top:8px">
 <button class="alt" onclick="plant()">🌱 Pflanzen</button>
@@ -170,18 +198,14 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 <option value="berry">🍓 Erdbeere – Samen 8 🪙 · Ernte 18 🪙 · 3 Min.</option>
 <option value="potato">🥔 Kartoffel – 1 Saatkartoffel aus Vorrat · 2,5 Min.</option>
 </select>
-
 <div id="inventory" class="note"></div>
-
 <div class="row" style="margin-top:8px">
 <button onclick="buyPotato()">🥔 1 Kartoffel-Saat kaufen (5 🪙)</button>
 </div>
-
 <div class="row" style="margin-top:8px">
 <button class="alt" id="sellOne" onclick="sellPotatoes('one')">🥔 1 Kartoffel verkaufen (+2 🪙)</button>
 <button class="alt" id="sellAll" onclick="sellPotatoes('all')">💰 Alle Kartoffeln verkaufen</button>
 </div>
-
 <p class="note">Verkauf: Jede Kartoffel bringt 2 Münzen. Du kannst einzelne oder alle Kartoffeln verkaufen.</p>
 <p class="note">Kartoffel-Regel: Eine geerntete Pflanze ergibt bis zu 5 Kartoffeln. Eine kannst du wieder einpflanzen. Maximal 30 Kartoffeln im Vorrat.</p>
 <p class="note">Pflügen dauert 15 Sekunden. Dünger kostet 2 Münzen und kann einmal pro Feld und Pflanzzyklus benutzt werden.</p>
@@ -207,18 +231,15 @@ try{
 let coins=saved?.coins??30;
 let harvests=saved?.harvests??0;
 let inventory=saved?.inventory??{potato:0};
-
 let fields=saved?.fields??Array.from(
  {length:10},
  ()=>({tilled:false,plowing:null,plant:null,fertilized:false})
 );
-
 fields=fields.map(f=>({...f,fertilized:!!f.fertilized}));
 
 let selected=0;
-let tractorPosition=0;
-let combinePosition=0;
-
+let tractorPosition=null;
+let combinePosition=null;
 const $=id=>document.getElementById(id);
 
 function save(){
@@ -231,32 +252,50 @@ function left(start,duration){
  return Math.max(0,Math.ceil((duration-(Date.now()-start))/1000));
 }
 
-function moveVehicle(id,i,offset){
- let col=i%5;
- let row=Math.floor(i/5);
+function moveVehicle(id,i){
  let vehicle=$(id);
+ let plot=$("fieldgrid").children[i];
+ if(!plot)return;
 
- vehicle.style.left=(2+col*19.1+offset)+"%";
+ let worldRect=$("world").getBoundingClientRect();
+ let plotRect=plot.getBoundingClientRect();
+ let left=plotRect.left-worldRect.left+(plotRect.width-vehicle.offsetWidth)/2;
+ let top=plotRect.top-worldRect.top+(plotRect.height-vehicle.offsetHeight)/2;
 
- if(row===0){
-  vehicle.style.top=id==="tractor"?"5%":"20%";
- }else{
-  vehicle.style.top=id==="tractor"?"60%":"75%";
- }
+ vehicle.style.bottom="auto";
+ vehicle.style.left=Math.max(0,Math.min(left,worldRect.width-vehicle.offsetWidth))+"px";
+ vehicle.style.top=Math.max(0,Math.min(top,worldRect.height-vehicle.offsetHeight-78))+"px";
 }
 
 function driveTractor(){
  tractorPosition=selected;
- moveVehicle("tractor",selected,0);
- $("tractorInfo").textContent="🚜 Traktor steht jetzt bei Feld "+(selected+1)+".";
- render();
+ moveVehicle("tractor",selected);
+ $("tractorInfo").textContent="🚜 Traktor ist bei Feld "+(selected+1)+".";
 }
 
 function driveCombine(){
  combinePosition=selected;
- moveVehicle("combine",selected,0);
- $("combineInfo").textContent="🌾 Mähdrescher steht jetzt bei Feld "+(selected+1)+".";
- render();
+ moveVehicle("combine",selected);
+ $("combineInfo").textContent="🌾 Mähdrescher ist bei Feld "+(selected+1)+".";
+}
+
+function parkVehicle(id){
+ let vehicle=$(id);
+ vehicle.style.top="auto";
+ vehicle.style.bottom="8px";
+ vehicle.style.left=id==="tractor"?"7%":"57%";
+}
+
+function parkTractor(){
+ tractorPosition=null;
+ parkVehicle("tractor");
+ $("tractorInfo").textContent="🚜 Traktor steht auf seinem Parkplatz.";
+}
+
+function parkCombine(){
+ combinePosition=null;
+ parkVehicle("combine");
+ $("combineInfo").textContent="🌾 Mähdrescher steht auf seinem Parkplatz.";
 }
 
 function render(){
@@ -266,13 +305,11 @@ function render(){
 
  let potatoCount=inventory.potato||0;
  $("inventory").textContent="🥔 Kartoffeln im Vorrat: "+potatoCount+" / 30";
-
  $("sellOne").disabled=potatoCount<1;
  $("sellAll").disabled=potatoCount<1;
  $("sellAll").textContent="💰 Alle Kartoffeln verkaufen (+"+(potatoCount*2)+" 🪙)";
 
  $("fieldgrid").innerHTML="";
-
  fields.forEach((f,i)=>{
   let label="Wiese",ico="🌿";
 
@@ -290,12 +327,10 @@ function render(){
   let b=document.createElement("button");
   b.className="plot"+(!f.tilled&&!f.plant&&!f.plowing?" grass":"")+(i===selected?" selected":"");
   b.innerHTML=`<span>Feld ${i+1}</span><span class="crop">${ico}</span><span>${label}</span>`;
-
   b.onclick=()=>{
    selected=i;
    render();
   };
-
   $("fieldgrid").appendChild(b);
  });
 
@@ -314,7 +349,6 @@ function render(){
   let c=crops[f.plant.type];
   let e=Date.now()-f.plant.started;
   let l=left(f.plant.started,f.plant.duration);
-
   status=c.emoji+" "+c.name+(l===0?" ist erntereif!":" wächst.")+(f.fertilized?" · gedüngt":"");
   p=Math.min(100,e/f.plant.duration*100);
   t=l===0?"Mähdrescher zum Feld fahren und ernten!":"Noch "+l+" Sekunden";
@@ -325,9 +359,6 @@ function render(){
  $("status").textContent=status;
  $("bar").style.width=p+"%";
  $("timer").textContent=t;
-
- $("tractorInfo").textContent="🚜 Traktor: Feld "+(tractorPosition+1);
- $("combineInfo").textContent="🌾 Mähdrescher: Feld "+(combinePosition+1);
 }
 
 function refresh(){
@@ -337,7 +368,6 @@ function refresh(){
    f.tilled=true;
   }
  });
-
  save();
  render();
 }
@@ -349,12 +379,10 @@ function plow(){
   alert("Fahre zuerst den Traktor zu diesem Feld!");
   return;
  }
-
  if(f.tilled||f.plant||f.plowing){
   alert("Dieses Feld kann gerade nicht gepflügt werden.");
   return;
  }
-
  f.plowing=Date.now();
  save();
  render();
@@ -369,7 +397,6 @@ function plant(){
   alert("Das Feld muss fertig gepflügt und frei sein.");
   return;
  }
-
  if(type==="potato"){
   if((inventory.potato||0)<1){
    alert("Du hast keine Kartoffeln im Vorrat. Kaufe zuerst eine Saatkartoffel.");
@@ -384,12 +411,7 @@ function plant(){
   coins-=c.price;
  }
 
- f.plant={
-  type,
-  started:Date.now(),
-  duration:c.time
- };
-
+ f.plant={type,started:Date.now(),duration:c.time};
  f.fertilized=false;
  save();
  render();
@@ -400,12 +422,10 @@ function buyPotato(){
   alert("Dein Kartoffel-Vorrat ist bereits voll (30).");
   return;
  }
-
  if(coins<5){
   alert("Du brauchst 5 Münzen.");
   return;
  }
-
  coins-=5;
  inventory.potato++;
  save();
@@ -414,34 +434,27 @@ function buyPotato(){
 
 function sellPotatoes(amount){
  let available=inventory.potato||0;
-
  if(available<1){
   alert("Du hast keine Kartoffeln zum Verkaufen.");
   return;
  }
-
  let quantity=amount==="all"?available:1;
-
  inventory.potato-=quantity;
  coins+=quantity*2;
-
  save();
  render();
 }
 
 function fertilize(){
  let f=fields[selected];
-
  if(!f.plant){
   alert("Auf diesem Feld wächst gerade nichts.");
   return;
  }
-
  if(f.fertilized){
   alert("Dieses Feld wurde in diesem Pflanzzyklus bereits gedüngt.");
   return;
  }
-
  if(coins<2){
   alert("Nicht genug Münzen!");
   return;
@@ -449,13 +462,10 @@ function fertilize(){
 
  let elapsed=Date.now()-f.plant.started;
  let remaining=Math.max(0,f.plant.duration-elapsed);
-
  f.plant.started=Date.now();
  f.plant.duration=Math.ceil(remaining*.75);
-
  f.fertilized=true;
  coins-=2;
-
  save();
  render();
 }
@@ -467,12 +477,10 @@ function harvest(){
   alert("Fahre zuerst den Mähdrescher zu diesem Feld!");
   return;
  }
-
  if(!f.plant){
   alert("Auf diesem Feld wächst nichts.");
   return;
  }
-
  if(Date.now()-f.plant.started<f.plant.duration){
   alert("Die Pflanze ist noch nicht fertig.");
   return;
@@ -481,7 +489,6 @@ function harvest(){
  if(f.plant.type==="potato"){
   let gained=Math.min(5,30-(inventory.potato||0));
   inventory.potato=(inventory.potato||0)+gained;
-
   alert("Du hast "+gained+" Kartoffeln geerntet! Du kannst eine davon wieder einpflanzen.");
  }else{
   coins+=crops[f.plant.type].reward;
@@ -489,18 +496,21 @@ function harvest(){
 
  harvests++;
  f.plant=null;
-
- // Nach jeder Ernte ist das Feld wieder eine Wiese.
  f.tilled=false;
  f.fertilized=false;
-
  save();
  render();
 }
 
-moveVehicle("tractor",0,0);
-moveVehicle("combine",0,0);
 render();
+parkTractor();
+parkCombine();
+
+window.addEventListener("resize",()=>{
+ if(tractorPosition!==null)moveVehicle("tractor",tractorPosition);
+ if(combinePosition!==null)moveVehicle("combine",combinePosition);
+});
+
 setInterval(refresh,1000);
 </script>
 </body>
