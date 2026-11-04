@@ -22,14 +22,15 @@ main{max-width:900px;margin:auto;padding:12px}
 .plot.grass{background:repeating-linear-gradient(0deg,#79b64b 0 8px,#6da341 8px 12px);border-color:#4c7934}
 .plot.selected{outline:4px solid #ffe052;outline-offset:1px}
 .crop{font-size:clamp(19px,4vw,28px)}
-.tractor{position:absolute;z-index:3;left:3%;top:calc(48% - 24px);width:100px;height:55px;transition:left .6s,top .6s;filter:drop-shadow(2px 3px 1px #42652d)}
-.tractor svg{width:100%;height:100%}
+.tractor{position:absolute;z-index:3;left:3%;top:calc(48% - 24px);width:125px;height:65px;transition:left .6s,top .6s;filter:drop-shadow(2px 3px 1px #42652d);pointer-events:none}
+.tractor svg{width:100%;height:100%;overflow:visible}
 .controls,.shop{background:white;border-radius:15px;padding:13px;margin-top:12px;box-shadow:0 3px #c3d8ae}
 h2{font-size:18px;margin:0 0 8px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 button,select{font:inherit;border:0;border-radius:10px;padding:11px;font-weight:750}
 button{background:#4f8537;color:white;flex:1;min-width:125px;box-shadow:0 3px #356126}
 button.alt{background:#e8f0df;color:#304b27;box-shadow:0 3px #c5d5b6}
+button:disabled{opacity:.45;cursor:not-allowed}
 select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 .progress{height:10px;background:#e2e2e2;border-radius:20px;overflow:hidden;margin:7px 0}
 .bar{height:100%;width:0;background:#70a943}
@@ -37,7 +38,7 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 @media(max-width:520px){
  .fieldgrid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(5,1fr);inset:10px 8px 65px}
  .world{height:650px}
- .tractor{width:82px;height:45px}
+ .tractor{width:105px;height:55px}
 }
 </style>
 </head>
@@ -50,24 +51,30 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 <span>🌱 <b id="planted">0</b> bepflanzt</span>
 </div>
 </header>
-
 <main>
 <div class="scene">
 <div class="sky"><span>☀️ Sonnental</span><span>2D FARM</span></div>
 <div class="world" id="world">
 <div class="path"></div>
 <div class="fieldgrid" id="fieldgrid"></div>
-<div class="tractor" id="tractor">
-<svg viewBox="0 0 130 70">
-<circle cx="34" cy="54" r="15" fill="#292d2b"/>
-<circle cx="34" cy="54" r="7" fill="#aeb5ad"/>
-<circle cx="94" cy="56" r="10" fill="#292d2b"/>
-<circle cx="94" cy="56" r="4" fill="#aeb5ad"/>
-<path d="M24 26h66l14 20H20z" fill="#e5a923" stroke="#80531c" stroke-width="3"/>
-<path d="M55 8h29l12 22H50z" fill="#e7b52c" stroke="#80531c" stroke-width="3"/>
-<path d="M61 12h17l8 14H58z" fill="#9dd4e4" stroke="#486b70" stroke-width="2"/>
-<path d="M18 29h26v15H18z" fill="#df9d20" stroke="#80531c" stroke-width="2"/>
-<rect x="39" y="29" width="54" height="8" rx="3" fill="#f2c13b"/>
+<div class="tractor" id="tractor" aria-label="Traktor mit Pflug">
+<svg viewBox="0 0 155 75">
+<!-- Pflug -->
+<path d="M17 42 L5 49 L5 57" fill="none" stroke="#343a32" stroke-width="5"/>
+<path d="M5 53 L0 64 L15 61 L22 49" fill="#777d79" stroke="#343a32" stroke-width="2"/>
+<path d="M7 60 L18 64 L27 56" fill="none" stroke="#343a32" stroke-width="3"/>
+<!-- Räder -->
+<circle cx="49" cy="57" r="16" fill="#292d2b"/>
+<circle cx="49" cy="57" r="7" fill="#aeb5ad"/>
+<circle cx="111" cy="59" r="11" fill="#292d2b"/>
+<circle cx="111" cy="59" r="4" fill="#aeb5ad"/>
+<!-- Traktor -->
+<path d="M32 29 H111 L128 49 H27 Z" fill="#e5a923" stroke="#80531c" stroke-width="3"/>
+<path d="M66 8 H94 L105 31 H60 Z" fill="#e7b52c" stroke="#80531c" stroke-width="3"/>
+<path d="M71 12 H90 L98 27 H68 Z" fill="#9dd4e4" stroke="#486b70" stroke-width="2"/>
+<path d="M25 31 H49 V45 H25 Z" fill="#df9d20" stroke="#80531c" stroke-width="2"/>
+<rect x="49" y="31" width="65" height="8" rx="3" fill="#f2c13b"/>
+<rect x="119" y="35" width="8" height="7" rx="2" fill="#fff2a8"/>
 </svg>
 </div>
 </div>
@@ -91,43 +98,59 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 
 <section class="shop">
 <h2>🛒 Saatgutladen & Vorrat</h2>
-<select id="seed"></select>
+<select id="seed">
+<option value="carrot">🥕 Karotte – Samen 2 🪙 · Ernte 5 🪙 · 1 Min.</option>
+<option value="corn">🌽 Mais – Samen 5 🪙 · Ernte 12 🪙 · 2 Min.</option>
+<option value="berry">🍓 Erdbeere – Samen 8 🪙 · Ernte 18 🪙 · 3 Min.</option>
+<option value="potato">🥔 Kartoffel – 1 Saatkartoffel aus Vorrat · 2,5 Min.</option>
+</select>
+
 <div id="inventory" class="note"></div>
-<p class="note">
-🥔 Kartoffel-Regel: Eine Kartoffel-Saat ergibt 5 Kartoffeln.
-Eine davon kannst du wieder einpflanzen, 4 bleiben übrig.
-Maximal 30 Saatkartoffeln im Vorrat.
-</p>
-<div class="note">
-Pflügen dauert 30 Sekunden. Dünger verkürzt das Wachstum einmalig um 25 %.
-Der Spielstand wird auf diesem Gerät gespeichert.
+
+<div class="row" style="margin-top:8px">
+<button onclick="buyPotato()">🥔 1 Kartoffel-Saat kaufen (5 🪙)</button>
 </div>
+
+<div class="row" style="margin-top:8px">
+<button class="alt" id="sellOne" onclick="sellPotatoes('one')">
+🥔 1 Kartoffel verkaufen (+2 🪙)
+</button>
+<button class="alt" id="sellAll" onclick="sellPotatoes('all')">
+💰 Alle Kartoffeln verkaufen
+</button>
+</div>
+
+<p class="note">Verkauf: Jede Kartoffel bringt 2 Münzen. Du kannst einzelne oder alle Kartoffeln verkaufen.</p>
+<p class="note">Kartoffel-Regel: Eine geerntete Pflanze ergibt 5 Kartoffeln. Eine kannst du wieder einpflanzen, 4 bleiben im Vorrat. Maximal 30 Kartoffeln im Vorrat.</p>
+<p class="note">Pflügen dauert 30 Sekunden. Dünger kostet 2 Münzen und kann einmal pro Feld und Pflanzzyklus benutzt werden. Der Spielstand wird auf diesem Gerät gespeichert.</p>
 </section>
 </main>
 
 <script>
 const crops={
- carrot:{name:"Karotte",emoji:"🥕",price:2,reward:5,time:60000,kind:"normal"},
- corn:{name:"Mais",emoji:"🌽",price:5,reward:12,time:120000,kind:"normal"},
- berry:{name:"Erdbeere",emoji:"🍓",price:8,reward:18,time:180000,kind:"normal"},
- potato:{name:"Kartoffel",emoji:"🥔",price:5,reward:0,time:150000,kind:"seed",yield:5}
+ carrot:{name:"Karotte",emoji:"🥕",price:2,reward:5,time:60000},
+ corn:{name:"Mais",emoji:"🌽",price:5,reward:12,time:120000},
+ berry:{name:"Erdbeere",emoji:"🍓",price:8,reward:18,time:180000},
+ potato:{name:"Kartoffel",emoji:"🥔",price:0,reward:0,time:150000}
 };
 
 let saved;
-try{saved=JSON.parse(localStorage.getItem("farm2dSave"))}catch(e){}
+try{
+ saved=JSON.parse(localStorage.getItem("farm2dSave"));
+}catch(e){}
+
 let coins=saved?.coins??30;
 let harvests=saved?.harvests??0;
 let inventory=saved?.inventory??{potato:0};
-let fields=saved?.fields??Array.from({length:10},()=>({
- tilled:false,plowing:null,plant:null
-}));
+let fields=saved?.fields??Array.from(
+ {length:10},
+ ()=>({tilled:false,plowing:null,plant:null,fertilized:false})
+);
+
+fields=fields.map(f=>({...f,fertilized:!!f.fertilized}));
 let selected=0;
 
 const $=id=>document.getElementById(id);
-
-$("seed").innerHTML=Object.entries(crops).map(([k,c])=>
- `<option value="${k}">${c.emoji} ${c.name} – Samen ${c.price} 🪙 · ${c.kind==="seed"?"Ernte 5 Kartoffeln":"Ernte "+c.reward+" 🪙"} · ${c.time/60000} Min.</option>`
-).join("");
 
 function save(){
  localStorage.setItem("farm2dSave",JSON.stringify({
@@ -135,8 +158,8 @@ function save(){
  }));
 }
 
-function left(s,d){
- return Math.max(0,Math.ceil((d-(Date.now()-s))/1000));
+function left(start,duration){
+ return Math.max(0,Math.ceil((duration-(Date.now()-start))/1000));
 }
 
 function moveTractor(i){
@@ -149,22 +172,45 @@ function render(){
  $("coins").textContent=coins;
  $("harvests").textContent=harvests;
  $("planted").textContent=fields.filter(f=>f.plant).length;
+
+ let potatoCount=inventory.potato||0;
+ $("inventory").textContent="🥔 Kartoffeln im Vorrat: "+potatoCount+" / 30";
+
+ $("sellOne").disabled=potatoCount<1;
+ $("sellAll").disabled=potatoCount<1;
+ $("sellAll").textContent="💰 Alle Kartoffeln verkaufen (+"+(potatoCount*2)+" 🪙)";
+
  $("fieldgrid").innerHTML="";
 
  fields.forEach((f,i)=>{
   let label="Wiese",ico="🌿";
-  if(f.plowing){label="Pflügen "+left(f.plowing,30000)+"s";ico="🚜"}
-  else if(f.plant){label=crops[f.plant.type].name;ico=crops[f.plant.type].emoji}
-  else if(f.tilled){label="Acker";ico="🟫"}
+
+  if(f.plowing){
+   label="Pflügen "+left(f.plowing,30000)+"s";
+   ico="🚜";
+  }else if(f.plant){
+   label=crops[f.plant.type].name;
+   ico=crops[f.plant.type].emoji;
+  }else if(f.tilled){
+   label="Acker";
+   ico="🟫";
+  }
 
   let b=document.createElement("button");
   b.className="plot"+(!f.tilled&&!f.plant&&!f.plowing?" grass":"")+(i===selected?" selected":"");
   b.innerHTML=`<span>Feld ${i+1}</span><span class="crop">${ico}</span><span>${label}</span>`;
-  b.onclick=()=>{selected=i;moveTractor(i);render()};
+  b.onclick=()=>{
+   selected=i;
+   moveTractor(i);
+   render();
+  };
   $("fieldgrid").appendChild(b);
  });
 
- let f=fields[selected],status="Wiese – zuerst pflügen.",p=0,t="Der Traktor fährt zum Feld.";
+ let f=fields[selected];
+ let status="Wiese – zuerst pflügen.";
+ let p=0,t="Der Traktor fährt zum Feld.";
+
  $("chosen").textContent="Feld "+(selected+1)+" ausgewählt";
 
  if(f.plowing){
@@ -172,19 +218,21 @@ function render(){
   status="🚜 Der Traktor pflügt.";
   p=Math.min(100,e/30000*100);
   t="Noch "+left(f.plowing,30000)+" Sekunden";
- }
- else if(f.plant){
-  let c=crops[f.plant.type],e=Date.now()-f.plant.started,l=left(f.plant.started,f.plant.duration);
-  status=c.emoji+" "+c.name+(l===0?" ist erntereif!":" wächst.");
+ }else if(f.plant){
+  let c=crops[f.plant.type];
+  let e=Date.now()-f.plant.started;
+  let l=left(f.plant.started,f.plant.duration);
+
+  status=c.emoji+" "+c.name+(l===0?" ist erntereif!":" wächst.")+(f.fertilized?" · gedüngt":"");
   p=Math.min(100,e/f.plant.duration*100);
   t=l===0?"Jetzt ernten!":"Noch "+l+" Sekunden";
+ }else if(f.tilled){
+  status="Gepflügter Acker – bereit zum Säen.";
  }
- else if(f.tilled)status="Gepflügter Acker – bereit zum Säen.";
 
  $("status").textContent=status;
  $("bar").style.width=p+"%";
  $("timer").textContent=t;
- $("inventory").textContent="🥔 Kartoffel-Saat im Vorrat: "+(inventory.potato||0)+" / 30";
 }
 
 function refresh(){
@@ -201,6 +249,7 @@ function refresh(){
 function plow(){
  let f=fields[selected];
  if(f.tilled||f.plant||f.plowing)return;
+
  f.plowing=Date.now();
  moveTractor(selected);
  save();
@@ -208,7 +257,10 @@ function plow(){
 }
 
 function plant(){
- let f=fields[selected],type=$("seed").value,c=crops[type];
+ let f=fields[selected];
+ let type=$("seed").value;
+ let c=crops[type];
+
  if(!f.tilled||f.plant||f.plowing){
   alert("Das Feld muss fertig gepflügt und frei sein.");
   return;
@@ -216,23 +268,58 @@ function plant(){
 
  if(type==="potato"){
   if((inventory.potato||0)<1){
-   if(coins<c.price){
-    alert("Nicht genug Münzen für Kartoffel-Saat!");
-    return;
-   }
-   coins-=c.price;
-  }else{
-   inventory.potato--;
+   alert("Du hast keine Kartoffeln im Vorrat. Kaufe zuerst eine Saatkartoffel oder ernte Kartoffeln.");
+   return;
   }
-  f.plant={type,started:Date.now(),duration:c.time,boosted:false};
+  inventory.potato--;
  }else{
   if(coins<c.price){
    alert("Nicht genug Münzen!");
    return;
   }
   coins-=c.price;
-  f.plant={type,started:Date.now(),duration:c.time,boosted:false};
  }
+
+ f.plant={
+  type,
+  started:Date.now(),
+  duration:c.time
+ };
+
+ f.fertilized=false;
+ save();
+ render();
+}
+
+function buyPotato(){
+ if((inventory.potato||0)>=30){
+  alert("Dein Kartoffel-Vorrat ist bereits voll (30).");
+  return;
+ }
+
+ if(coins<5){
+  alert("Du brauchst 5 Münzen.");
+  return;
+ }
+
+ coins-=5;
+ inventory.potato++;
+ save();
+ render();
+}
+
+function sellPotatoes(amount){
+ let available=inventory.potato||0;
+
+ if(available<1){
+  alert("Du hast keine Kartoffeln zum Verkaufen.");
+  return;
+ }
+
+ let quantity=amount==="all"?available:1;
+
+ inventory.potato-=quantity;
+ coins+=quantity*2;
 
  save();
  render();
@@ -240,24 +327,40 @@ function plant(){
 
 function fertilize(){
  let f=fields[selected];
- if(!f.plant||f.plant.boosted){
-  alert("Dünger geht nur einmal pro Pflanze.");
+
+ if(!f.plant){
+  alert("Auf diesem Feld wächst gerade nichts.");
   return;
  }
+
+ if(f.fertilized){
+  alert("Dieses Feld wurde in diesem Pflanzzyklus bereits gedüngt.");
+  return;
+ }
+
  if(coins<2){
   alert("Nicht genug Münzen!");
   return;
  }
+
+ let elapsed=Date.now()-f.plant.started;
+ let remaining=Math.max(0,f.plant.duration-elapsed);
+
+ f.plant.started=Date.now();
+ f.plant.duration=Math.ceil(remaining*.75);
+
+ f.fertilized=true;
  coins-=2;
- f.plant.duration=Math.ceil(f.plant.duration*.75);
- f.plant.boosted=true;
+
  save();
  render();
 }
 
 function harvest(){
  let f=fields[selected];
+
  if(!f.plant)return;
+
  if(Date.now()-f.plant.started<f.plant.duration){
   alert("Die Pflanze ist noch nicht fertig.");
   return;
@@ -266,7 +369,8 @@ function harvest(){
  if(f.plant.type==="potato"){
   let gained=Math.min(5,30-(inventory.potato||0));
   inventory.potato=(inventory.potato||0)+gained;
-  alert("Du hast "+gained+" Kartoffeln geerntet! Eine kannst du wieder einpflanzen.");
+
+  alert("Du hast "+gained+" Kartoffeln geerntet! Wähle Kartoffel im Saatmenü und pflanze eine aus deinem Vorrat.");
  }else{
   coins+=crops[f.plant.type].reward;
  }
@@ -274,6 +378,8 @@ function harvest(){
  harvests++;
  f.plant=null;
  f.tilled=true;
+ f.fertilized=false;
+
  save();
  render();
 }
