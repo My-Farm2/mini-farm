@@ -34,7 +34,7 @@ main{max-width:900px;margin:auto;padding:12px}
 .road.access{left:0;right:0;bottom:82px;height:22px}
 .road.parking-access{left:50%;top:48%;bottom:82px;width:22px;transform:translateX(-50%)}
 
-.vehicle{position:absolute;z-index:4;transition:left 3s linear,top 3s linear;pointer-events:none;filter:drop-shadow(2px 3px 2px #42652d)}
+.vehicle{position:absolute;z-index:4;transition:left 1.8s linear,top 1.8s linear;pointer-events:none;filter:drop-shadow(2px 3px 2px #42652d)}
 #tractor{width:105px;height:58px}
 #combine{width:125px;height:92px}
 .vehicle svg{width:100%;height:100%}
@@ -99,7 +99,6 @@ select{width:100%;background:#edf4e7;margin:5px 0 10px}
 <path d="M66 8 H94 L105 31 H60 Z" fill="#e7b52c" stroke="#80531c" stroke-width="3"/>
 <path d="M71 12 H90 L98 27 H68 Z" fill="#9dd4e4" stroke="#486b70" stroke-width="2"/>
 <rect x="49" y="31" width="65" height="8" rx="3" fill="#f2c13b"/>
-
 <!-- Pflug am Heck -->
 <path d="M31 43 L18 48 L10 62" fill="none" stroke="#343434" stroke-width="4" stroke-linecap="round"/>
 <path d="M10 61 L5 68 L32 68 L27 61 Z" fill="#777" stroke="#343434" stroke-width="2"/>
@@ -211,7 +210,7 @@ function anyFieldPlowing(){
  return fields.some(f=>!!f.plowing);
 }
 
-// Alte Spielstände mit mehreren gleichzeitigen Pflugvorgängen bereinigen.
+// Alte Spielstände mit mehreren Pflugvorgängen bereinigen.
 const firstPlowing=fields.findIndex(f=>!!f.plowing);
 if(firstPlowing>=0){
  fields.forEach((f,i)=>{
@@ -236,7 +235,6 @@ function render(){
  $("fieldgrid").innerHTML="";
  fields.forEach((f,i)=>{
   let label="Wiese",ico="🌿";
-
   if(f.plowing){
    label="Pflügen "+left(f.plowing,PLOW_TIME)+"s";
    ico="🚜";
@@ -266,9 +264,7 @@ function render(){
   p=Math.min(100,(Date.now()-f.plowing)/PLOW_TIME*100);
   t="Noch "+left(f.plowing,PLOW_TIME)+" Sekunden";
  }else if(f.plant){
-  let c=crops[f.plant.type];
-  let e=Date.now()-f.plant.started;
-  let l=left(f.plant.started,f.plant.duration);
+  let c=crops[f.plant.type],e=Date.now()-f.plant.started,l=left(f.plant.started,f.plant.duration);
   status=c.emoji+" "+c.name+(l===0?" ist erntereif!":" wächst.");
   p=Math.min(100,e/f.plant.duration*100);
   t=l===0?"Mähdrescher zum Feld fahren!":"Noch "+l+" Sekunden";
@@ -281,6 +277,7 @@ function render(){
  $("timer").textContent=t;
 }
 
+/* Neue Bewegungssteuerung */
 async function moveVehicle(id,index){
  const vehicle=$(id);
  const plot=$("fieldgrid").children[index];
@@ -291,48 +288,57 @@ async function moveVehicle(id,index){
  if(id==="tractor")tractorMoving=true;
  else combineMoving=true;
 
- const wr=$("world").getBoundingClientRect();
- const pr=plot.getBoundingClientRect();
- const w=vehicle.offsetWidth;
- const h=vehicle.offsetHeight;
+ const moveTo=async(x,y)=>{
+  const world=$("world");
+  vehicle.style.left=Math.max(0,Math.min(x,world.clientWidth-vehicle.offsetWidth))+"px";
+  vehicle.style.top=Math.max(0,Math.min(y,world.clientHeight-vehicle.offsetHeight-82))+"px";
+  await sleep(1900);
+ };
 
- const targetX=Math.max(0,Math.min(pr.left-wr.left+(pr.width-w)/2,wr.width-w));
- const targetY=Math.max(0,Math.min(pr.top-wr.top+(pr.height-h)/2,wr.height-h-82));
- const centerX=wr.width/2-w/2;
- const accessY=wr.height-82-11-h/2;
- const roadY=wr.height*.48-h/2;
- const wasParked=id==="tractor"?tractorPosition===null:combinePosition===null;
+ try{
+  const world=$("world");
+  const wr=world.getBoundingClientRect();
+  const pr=plot.getBoundingClientRect();
+  const w=vehicle.offsetWidth,h=vehicle.offsetHeight;
 
- const vr=vehicle.getBoundingClientRect();
- const currentX=vr.left-wr.left;
- const currentY=vr.top-wr.top;
+  const targetX=pr.left-wr.left+(pr.width-w)/2;
+  const targetY=pr.top-wr.top+(pr.height-h)/2;
+  const centerX=wr.width/2-w/2;
+  const roadY=wr.height*.48-h/2;
+  const accessY=wr.height-82-11-h/2;
 
- vehicle.style.bottom="auto";
- vehicle.style.left=currentX+"px";
- vehicle.style.top=currentY+"px";
- void vehicle.offsetHeight;
+  const parked=(id==="tractor"?tractorPosition:combinePosition)===null;
 
- if(wasParked){
-  vehicle.style.top=accessY+"px";
-  await sleep(3100);
+  // Sichtbare aktuelle Position auslesen.
+  const rect=vehicle.getBoundingClientRect();
+  const currentX=rect.left-wr.left;
+  const currentY=rect.top-wr.top;
 
-  vehicle.style.left=centerX+"px";
-  await sleep(3100);
+  vehicle.style.transition="none";
+  vehicle.style.bottom="auto";
+  vehicle.style.left=currentX+"px";
+  vehicle.style.top=currentY+"px";
+  void vehicle.offsetHeight;
+  vehicle.style.transition="left 1.8s linear,top 1.8s linear";
+
+  if(parked){
+   // Vom Parkplatz zur Straße.
+   await moveTo(currentX,accessY);
+   await moveTo(centerX,accessY);
+  }else{
+   // Von einem Feld zurück auf die Straße.
+   await moveTo(currentX,roadY);
+  }
+
+  // Auf der Straße zum passenden Feld fahren.
+  await moveTo(targetX,roadY);
+  await moveTo(targetX,targetY);
+
+  return true;
+ }finally{
+  if(id==="tractor")tractorMoving=false;
+  else combineMoving=false;
  }
-
- vehicle.style.top=roadY+"px";
- await sleep(3100);
-
- vehicle.style.left=targetX+"px";
- await sleep(3100);
-
- vehicle.style.top=targetY+"px";
- await sleep(3100);
-
- if(id==="tractor")tractorMoving=false;
- else combineMoving=false;
-
- return true;
 }
 
 async function driveTractor(){
@@ -344,7 +350,13 @@ async function driveTractor(){
  if(tractorMoving)return;
 
  const target=selected;
- $("tractorInfo").textContent="Traktor fährt langsam zu Feld "+(target+1)+" …";
+
+ if(tractorPosition===target){
+  $("tractorInfo").textContent="Der Traktor steht bereits bei Feld "+(target+1)+".";
+  return;
+ }
+
+ $("tractorInfo").textContent="Traktor fährt zu Feld "+(target+1)+" …";
 
  const arrived=await moveVehicle("tractor",target);
 
@@ -358,7 +370,13 @@ async function driveCombine(){
  if(combineMoving)return;
 
  const target=selected;
- $("combineInfo").textContent="Mähdrescher fährt langsam zu Feld "+(target+1)+" …";
+
+ if(combinePosition===target){
+  $("combineInfo").textContent="Der Mähdrescher steht bereits bei Feld "+(target+1)+".";
+  return;
+ }
+
+ $("combineInfo").textContent="Mähdrescher fährt zu Feld "+(target+1)+" …";
 
  const arrived=await moveVehicle("combine",target);
 
@@ -374,39 +392,42 @@ async function parkVehicle(id){
  if(id==="tractor")tractorMoving=true;
  else combineMoving=true;
 
- const wr=$("world").getBoundingClientRect();
- const w=v.offsetWidth;
- const h=v.offsetHeight;
+ const world=$("world");
 
- const centerX=wr.width/2-w/2;
- const roadY=wr.height*.48-h/2;
- const accessY=wr.height-82-11-h/2;
- const parkX=id==="tractor"?wr.width*.05:wr.width*.57;
+ try{
+  const wr=world.getBoundingClientRect();
+  const w=v.offsetWidth,h=v.offsetHeight;
+  const centerX=wr.width/2-w/2;
+  const roadY=wr.height*.48-h/2;
+  const accessY=wr.height-82-11-h/2;
+  const parkX=id==="tractor"?wr.width*.05:wr.width*.57;
 
- const vr=v.getBoundingClientRect();
+  const rect=v.getBoundingClientRect();
 
- v.style.bottom="auto";
- v.style.left=(vr.left-wr.left)+"px";
- v.style.top=(vr.top-wr.top)+"px";
- void v.offsetHeight;
+  v.style.transition="none";
+  v.style.bottom="auto";
+  v.style.left=(rect.left-wr.left)+"px";
+  v.style.top=(rect.top-wr.top)+"px";
+  void v.offsetHeight;
+  v.style.transition="left 1.8s linear,top 1.8s linear";
 
- v.style.top=roadY+"px";
- await sleep(3100);
+  const moveTo=async(x,y)=>{
+   v.style.left=x+"px";
+   v.style.top=y+"px";
+   await sleep(1900);
+  };
 
- v.style.left=centerX+"px";
- await sleep(3100);
+  await moveTo(rect.left-wr.left,roadY);
+  await moveTo(centerX,roadY);
+  await moveTo(centerX,accessY);
+  await moveTo(parkX,accessY);
 
- v.style.top=accessY+"px";
- await sleep(3100);
-
- v.style.left=parkX+"px";
- await sleep(3100);
-
- v.style.top="auto";
- v.style.bottom="8px";
-
- if(id==="tractor")tractorMoving=false;
- else combineMoving=false;
+  v.style.top="auto";
+  v.style.bottom="8px";
+ }finally{
+  if(id==="tractor")tractorMoving=false;
+  else combineMoving=false;
+ }
 }
 
 async function parkTractor(){
@@ -471,9 +492,7 @@ function plow(){
 }
 
 function plant(){
- let f=fields[selected];
- let type=$("seed").value;
- let c=crops[type];
+ let f=fields[selected],type=$("seed").value,c=crops[type];
 
  if(!f.tilled||f.plant||f.plowing){
   alert("Das Feld muss fertig gepflügt sein.");
@@ -590,8 +609,7 @@ function harvest(){
 }
 
 function setVehicleParked(id){
- const v=$(id);
- const wr=$("world").getBoundingClientRect();
+ const v=$(id),wr=$("world").getBoundingClientRect();
 
  v.style.transition="none";
  v.style.top="auto";
@@ -599,7 +617,7 @@ function setVehicleParked(id){
  v.style.left=(id==="tractor"?wr.width*.05:wr.width*.57)+"px";
 
  requestAnimationFrame(()=>{
-  v.style.transition="left 3s linear,top 3s linear";
+  v.style.transition="left 1.8s linear,top 1.8s linear";
  });
 }
 
@@ -608,12 +626,7 @@ setVehicleParked("tractor");
 setVehicleParked("combine");
 
 window.addEventListener("resize",()=>{
- if(tractorPosition!==null&&!tractorMoving){
-  moveVehicle("tractor",tractorPosition);
- }
- if(combinePosition!==null&&!combineMoving){
-  moveVehicle("combine",combinePosition);
- }
+ // Fahrzeuge bleiben bei einer Größenänderung an ihrer aktuellen Position.
 });
 
 setInterval(refresh,1000);
