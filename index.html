@@ -7,720 +7,863 @@
 <title>Meine Mini Farm 3D</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#dceecb;color:#263b20;font-family:Arial,sans-serif}
-header{background:#426f30;color:white;text-align:center;padding:12px}
-h1{margin:0 0 8px;font-size:23px}
-.stats{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;font-weight:bold}
-main{max-width:1200px;margin:auto;padding:10px}
-.panel{background:white;border-radius:14px;padding:13px;margin-bottom:12px}
-#game{height:650px;width:100%;border:4px solid #527d38;border-radius:12px;overflow:hidden;background:#8fbd62;position:relative;touch-action:none}
-canvas{display:block;width:100%;height:100%}
-h2{font-size:18px;margin:0 0 10px}
-h3{font-size:15px;margin:13px 0 7px}
-.row{display:flex;gap:8px;flex-wrap:wrap}
-button,select{font:inherit;border:0;border-radius:9px;padding:11px;font-weight:bold}
-button{background:#4f8537;color:white;flex:1;min-width:120px;cursor:pointer}
-button.alt{background:#e8f0df;color:#304b27}
-button:disabled{opacity:.4}
-select{width:100%;background:#edf4e7;margin:5px 0 10px}
-.progress{height:10px;background:#ddd;border-radius:20px;overflow:hidden;margin:8px 0}
-.bar{height:100%;background:#70a943;width:0}
-.note{font-size:13px;color:#607653;margin:7px 0}
-.info{background:#edf4e7;border-radius:8px;padding:8px;font-size:13px;margin-top:7px}
-#message{font-weight:bold;color:#355c27;margin:5px 0}
-#driveControls{display:flex;gap:15px;align-items:center;justify-content:center;margin-top:12px}
-.joystick{width:150px;height:150px;border-radius:50%;background:#dce8d4;border:3px solid #779967;position:relative;touch-action:none}
-#stick{position:absolute;width:60px;height:60px;border-radius:50%;background:#4f8537;left:42px;top:42px;box-shadow:0 2px 7px #555}
-.driveButtons{display:grid;grid-template-columns:repeat(2,65px);gap:7px}
-.driveButtons button{min-width:0;padding:15px 5px}
-#vehicleLabel{font-weight:bold;text-align:center;margin:8px}
+body{margin:0;overflow:hidden;background:#91b8d0;font-family:Arial,sans-serif;touch-action:none}
+canvas{display:block}
+#topbar{position:absolute;top:10px;left:10px;right:10px;display:flex;justify-content:space-between;gap:6px;z-index:5;pointer-events:none}
+.panel{background:#17251ddd;color:white;padding:9px 12px;border-radius:12px;font-size:13px;pointer-events:auto}
+#money{font-weight:bold;color:#ffe27a}
+#menu{position:absolute;top:65px;left:10px;display:flex;gap:6px;z-index:5}
+.menuBtn,.actionBtn{border:0;border-radius:10px;background:#263c2b;color:white;padding:11px;font-size:19px}
+#controls{position:absolute;bottom:18px;left:15px;right:15px;display:flex;justify-content:space-between;align-items:end;z-index:6;pointer-events:none}
+.controlGroup{display:flex;gap:9px;align-items:end;pointer-events:auto}
+.driveBtn{width:65px;height:65px;border:0;border-radius:18px;background:#263c2bdc;color:white;font-size:27px;touch-action:none}
+.driveBtn.big{width:76px;height:76px;background:#376b36}
+#speed{position:absolute;bottom:105px;right:20px;background:#17251ddd;color:white;padding:9px 14px;border-radius:12px;z-index:5}
+#exit{position:absolute;right:12px;top:65px;z-index:6}
+#message{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%);background:#18251eee;color:white;padding:15px 20px;border-radius:14px;display:none;z-index:20;text-align:center;max-width:85%}
+#menuPanel{position:absolute;top:115px;left:10px;width:min(330px,90vw);max-height:70vh;overflow:auto;background:#17251df2;color:white;border-radius:14px;padding:14px;display:none;z-index:10}
+#menuPanel h3{margin:5px 0 12px}
+#menuPanel button{width:100%;margin:4px 0;padding:10px;border:0;border-radius:8px;background:#496c40;color:white;font-size:14px}
+#menuPanel button:disabled{opacity:.4}
+#menuPanel .close{background:#814b3c}
+#help{font-size:12px;color:#d8e5d1;line-height:1.5;margin-top:10px}
 @media(max-width:600px){
- #game{height:520px}
- #driveControls{gap:8px}
- .joystick{width:130px;height:130px}
- #stick{left:32px;top:32px}
+ .panel{font-size:11px;padding:8px}
+ .menuBtn{padding:9px}
+ .driveBtn{width:58px;height:58px}
+ .driveBtn.big{width:68px;height:68px}
 }
 </style>
 </head>
 <body>
-<header>
-<h1>🚜 Meine Mini Farm 3D</h1>
-<div class="stats">
-<span>🪙 <b id="coins">30</b></span>
-<span>🌾 <b id="harvests">0</b> Ernten</span>
-<span>🌱 <b id="planted">0</b> bepflanzt</span>
-</div>
-</header>
 
-<main>
-<section class="panel">
-<h2>🌳 Dein Bauernhof</h2>
-<div id="game"></div>
-<p class="note">WASD oder Joystick zum Fahren. Mit Maus/Finger die Kamera drehen und mit dem Mausrad zoomen.</p>
-<div id="vehicleLabel">Kein Fahrzeug ausgewählt</div>
-<div id="driveControls">
- <div class="joystick" id="joystick"><div id="stick"></div></div>
- <div class="driveButtons">
-  <button id="forward">▲</button>
-  <button id="backward">▼</button>
-  <button id="left">◀</button>
-  <button id="right">▶</button>
+<div id="topbar">
+ <div class="panel">🚜 <span id="vehicleName">Traktor</span> · <span id="engineText">Motor aus</span></div>
+ <div class="panel">💰 <span id="money">500</span> · 🌾 <span id="harvests">0</span></div>
+</div>
+
+<div id="menu">
+ <button class="menuBtn" onclick="openMenu('vehicle')">🚜</button>
+ <button class="menuBtn" onclick="openMenu('farm')">🌾</button>
+ <button class="menuBtn" onclick="openMenu('shop')">🛒</button>
+ <button class="menuBtn" onclick="openMenu('tools')">⚒️</button>
+ <button class="menuBtn" onclick="openMenu('settings')">⚙️</button>
+</div>
+
+<button id="exit" class="menuBtn" onclick="parkVehicle()">↩</button>
+
+<div id="menuPanel">
+ <h3 id="menuTitle">Hof</h3>
+ <div id="menuContent"></div>
+ <div id="help">Fahre mit WASD oder den Bildschirmtasten. Die Geräte bearbeiten das Feld während der Fahrt.</div>
+ <button class="close" onclick="closeMenu()">Schließen</button>
+</div>
+
+<div id="speed">0 km/h</div>
+
+<div id="controls">
+ <div class="controlGroup">
+  <button class="driveBtn" id="left">◀</button>
+  <button class="driveBtn" id="right">▶</button>
+ </div>
+ <div class="controlGroup">
+  <button class="driveBtn" id="brake">▼</button>
+  <button class="driveBtn big" id="gas">▲</button>
  </div>
 </div>
-</section>
 
-<section class="panel">
-<h2 id="chosen">Feld 1 ausgewählt</h2>
-<div id="status">Wähle ein Feld aus.</div>
-<div class="progress"><div class="bar" id="bar"></div></div>
-<div class="note" id="timer"></div>
 <div id="message"></div>
-
-<h3>🚜 Fahrzeuge</h3>
-<div class="row">
-<button onclick="selectVehicle('tractor')">Traktor steuern</button>
-<button onclick="selectVehicle('combine')">Mähdrescher steuern</button>
-</div>
-<div class="row">
-<button class="alt" onclick="parkVehicle()">Zum Parkplatz</button>
-<button class="alt" onclick="toggleEngine()">Motor an/aus</button>
-</div>
-
-<h3>🔧 Anbaugeräte</h3>
-<div class="row">
-<button onclick="togglePlow()">Pflug an-/abkuppeln</button>
-<button onclick="toggleTrailer()">Anhänger an-/abkuppeln</button>
-<button class="alt" onclick="togglePlowDown()">Pflug senken/heben</button>
-</div>
-<div class="info" id="tractorInfo">Traktor bereit.</div>
-<div class="info" id="equipmentInfo">Pflug abgekuppelt · Anhänger abgekuppelt</div>
-
-<h3>🌾 Landwirtschaft</h3>
-<div class="row">
-<button onclick="plowField()">Feld pflügen</button>
-<button onclick="plant()">Säen</button>
-<button onclick="fertilize()">Düngen (2 🪙)</button>
-<button onclick="harvest()">Ernten</button>
-</div>
-<div class="info" id="combineInfo">Mähdrescher bereit.</div>
-</section>
-
-<section class="panel">
-<h2>🛒 Saatgutladen</h2>
-<select id="seed">
-<option value="carrot">🥕 Karotte – 2 Münzen · Ernte 5 · 1 Min.</option>
-<option value="corn">🌽 Mais – 5 Münzen · Ernte 12 · 2 Min.</option>
-<option value="berry">🍓 Erdbeere – 8 Münzen · Ernte 18 · 3 Min.</option>
-<option value="potato">🥔 Kartoffel – Saatkartoffel aus Vorrat · 2,5 Min.</option>
-</select>
-<div id="inventory" class="note"></div>
-<div class="row">
-<button onclick="buyPotato()">🥔 Saatkartoffel kaufen (5 🪙)</button>
-<button class="alt" onclick="sellPotatoes('one')">1 Kartoffel verkaufen</button>
-<button class="alt" onclick="sellPotatoes('all')">Alle verkaufen</button>
-</div>
-<p class="note">Eine Kartoffelpflanze ergibt bis zu 5 Kartoffeln. Eine Kartoffel kann wieder eingepflanzt werden. Vorrat maximal 30.</p>
-</section>
-</main>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 <script>
-const $=id=>document.getElementById(id);
+"use strict";
 
-const crops={
- carrot:{name:"Karotte",emoji:"🥕",price:2,reward:5,time:60000},
- corn:{name:"Mais",emoji:"🌽",price:5,reward:12,time:120000},
- berry:{name:"Erdbeere",emoji:"🍓",price:8,reward:18,time:180000},
- potato:{name:"Kartoffel",emoji:"🥔",price:5,reward:0,time:150000}
-};
-
-const PLOW_TIME=15000;
-let coins=30,harvests=0,inventory={potato:0},selected=0;
-let fields=Array.from({length:10},()=>({
- tilled:false,plant:null,plowing:null,fertilized:false
-}));
-
-try{
- const old=JSON.parse(localStorage.getItem("farm2dSave"));
- if(old){
-  coins=old.coins??30;
-  harvests=old.harvests??0;
-  inventory=old.inventory??{potato:0};
-  fields=old.fields??fields;
-  fields=fields.map(f=>({
-   tilled:!!f.tilled,plant:f.plant??null,
-   plowing:f.plowing??null,fertilized:!!f.fertilized
-  }));
- }
-}catch(e){}
-
-function save(){
- localStorage.setItem("farm2dSave",JSON.stringify({coins,harvests,inventory,fields}));
-}
-
-/* 3D WELT */
+/* ---------------- GRUNDLAGEN ---------------- */
 
 const scene=new THREE.Scene();
-scene.background=new THREE.Color(0x9bcfdf);
-scene.fog=new THREE.Fog(0x9bcfdf,55,130);
+scene.background=new THREE.Color(0x9bc3dc);
+scene.fog=new THREE.Fog(0x9bc3dc,85,190);
 
-const camera=new THREE.PerspectiveCamera(48,1,.1,200);
+const camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,500);
+camera.position.set(15,19,25);
+
 const renderer=new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(innerWidth,innerHeight);
 renderer.setPixelRatio(Math.min(devicePixelRatio,2));
 renderer.shadowMap.enabled=true;
 renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-$("game").appendChild(renderer.domElement);
+document.body.appendChild(renderer.domElement);
 
-scene.add(new THREE.HemisphereLight(0xffffff,0x61734a,2));
+scene.add(new THREE.HemisphereLight(0xffffff,0x64784b,2));
 
-const sun=new THREE.DirectionalLight(0xffffff,2.4);
-sun.position.set(-20,35,20);
+const sun=new THREE.DirectionalLight(0xfff2d5,2.2);
+sun.position.set(-35,55,25);
 sun.castShadow=true;
 sun.shadow.mapSize.set(2048,2048);
-sun.shadow.camera.left=-55;
-sun.shadow.camera.right=55;
-sun.shadow.camera.top=55;
-sun.shadow.camera.bottom=-55;
+sun.shadow.camera.left=-90;
+sun.shadow.camera.right=90;
+sun.shadow.camera.top=90;
+sun.shadow.camera.bottom=-90;
 scene.add(sun);
 
-function mat(color,roughness=1){
- return new THREE.MeshStandardMaterial({color,roughness});
+const mats={
+ grass:new THREE.MeshStandardMaterial({color:0x639b42}),
+ grass2:new THREE.MeshStandardMaterial({color:0x548a38}),
+ dirt:new THREE.MeshStandardMaterial({color:0x765033}),
+ plowed:new THREE.MeshStandardMaterial({color:0x50351f}),
+ seeded:new THREE.MeshStandardMaterial({color:0x654329}),
+ harvested:new THREE.MeshStandardMaterial({color:0x94734a}),
+ road:new THREE.MeshStandardMaterial({color:0x55534b}),
+ red:new THREE.MeshStandardMaterial({color:0xb92f20,roughness:.7}),
+ darkred:new THREE.MeshStandardMaterial({color:0x742016}),
+ green:new THREE.MeshStandardMaterial({color:0x378c34}),
+ darkgreen:new THREE.MeshStandardMaterial({color:0x205c26}),
+ black:new THREE.MeshStandardMaterial({color:0x171a19}),
+ tire:new THREE.MeshStandardMaterial({color:0x171817,roughness:1}),
+ metal:new THREE.MeshStandardMaterial({color:0x9da5a4,metalness:.65,roughness:.35}),
+ glass:new THREE.MeshStandardMaterial({color:0x8fc9d6,metalness:.2,roughness:.2,transparent:true,opacity:.65}),
+ yellow:new THREE.MeshStandardMaterial({color:0xf1c82e}),
+ white:new THREE.MeshStandardMaterial({color:0xe9e9d9}),
+ brown:new THREE.MeshStandardMaterial({color:0x704222})
+};
+
+function box(parent,x,y,z,sx,sy,sz,mat){
+ const m=new THREE.Mesh(new THREE.BoxGeometry(sx,sy,sz),mat);
+ m.position.set(x,y,z);
+ m.castShadow=true;m.receiveShadow=true;
+ parent.add(m);return m;
 }
-const grassMat=mat(0x70a94b);
-const dirtMat=mat(0x80502d);
-const roadMat=mat(0xb99a70);
-const woodMat=mat(0x79502c);
-
-function box(parent,x,y,z,w,h,d,material){
- const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),material);
- mesh.position.set(x,y,z);
- mesh.castShadow=true;
- mesh.receiveShadow=true;
- parent.add(mesh);
- return mesh;
+function cylinder(parent,x,y,z,r1,r2,h,mat,segments=16,rotZ=0){
+ const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,segments),mat);
+ m.position.set(x,y,z);m.rotation.z=rotZ;
+ m.castShadow=true;m.receiveShadow=true;
+ parent.add(m);return m;
 }
-
-box(scene,0,-.4,0,75,.7,75,grassMat);
-
-/* STRASSEN */
-
-function road(x,z,w,d){
- box(scene,x,-.025,z,w,.12,d,roadMat);
-}
-road(0,-2,66,3);
-road(0,16,66,3);
-road(-25,7,3,18);
-road(0,7,3,18);
-road(25,7,3,18);
-road(-12,7,2,18);
-road(12,7,2,18);
-
-/* FELDER */
-
-const fieldMeshes=[],fieldPositions=[];
-function makeFieldLabel(number){
- const c=document.createElement("canvas");
- c.width=256;c.height=128;
- const ctx=c.getContext("2d");
- ctx.fillStyle="rgba(30,30,30,.65)";
- ctx.fillRect(0,0,256,128);
- ctx.fillStyle="white";ctx.font="bold 54px Arial";
- ctx.textAlign="center";ctx.fillText("Feld "+number,128,80);
- const sprite=new THREE.Sprite(new THREE.SpriteMaterial({
-  map:new THREE.CanvasTexture(c),transparent:true
- }));
- sprite.scale.set(3,1.5,1);
- return sprite;
-}
-
-function createField(index){
- const col=index%5,row=Math.floor(index/5);
- const x=-24+col*12,z=-9+row*17;
- fieldPositions.push(new THREE.Vector3(x,.1,z));
-
- const group=new THREE.Group();
- group.position.set(x,0,z);
- scene.add(group);
-
- const base=box(group,0,.02,0,10,.22,13,dirtMat);
- const furrows=[];
- for(let i=0;i<13;i++){
-  furrows.push(box(group,-4.5+i*.75,.15,0,.08,.06,12,mat(0x60391f)));
- }
- const grass=box(group,0,.02,0,10,.24,13,grassMat);
- for(const xx of [-5,5])box(group,xx,.16,0,.18,.3,13.2,mat(0x49331f));
- for(const zz of [-6.5,6.5])box(group,0,.16,zz,10.2,.3,.18,mat(0x49331f));
- const label=makeFieldLabel(index+1);
- label.position.set(0,.5,0);
- group.add(label);
- fieldMeshes.push({group,base,grass,furrows,label,crop:null});
- updateFieldVisual(index);
-}
-for(let i=0;i<10;i++)createField(i);
-
-function makeCrop(type){
- const group=new THREE.Group();
- const colors={carrot:0xf28c28,corn:0xe9c33b,berry:0xd52c50,potato:0x9c7444};
- for(let i=0;i<9;i++){
-  const x=(i%3-1)*1.5,z=(Math.floor(i/3)-1)*2;
-  const stem=new THREE.Mesh(new THREE.CylinderGeometry(.08,.1,.9,7),mat(0x39803b));
-  stem.position.set(x,.5,z);group.add(stem);
-  const fruit=new THREE.Mesh(new THREE.SphereGeometry(.3,10,8),mat(colors[type]));
-  fruit.position.set(x,1,z);group.add(fruit);
- }
- return group;
-}
-
-function updateFieldVisual(i){
- const f=fields[i],v=fieldMeshes[i];
- v.grass.visible=!f.tilled&&!f.plant&&!f.plowing;
- v.base.material=f.plant?mat(0x704526):dirtMat;
- v.furrows.forEach(line=>line.visible=f.tilled||!!f.plant||!!f.plowing);
- if(v.crop){v.group.remove(v.crop);v.crop=null;}
- if(f.plant){
-  v.crop=makeCrop(f.plant.type);
-  v.crop.position.y=.2;
-  v.group.add(v.crop);
- }
-}
-
-/* BÄUME UND FARMGEBÄUDE */
-
-function tree(x,z,size=1){
- const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
- const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.25*size,.35*size,2*size,8),woodMat);
- trunk.position.y=size;trunk.castShadow=true;g.add(trunk);
- const crown=new THREE.Mesh(new THREE.SphereGeometry(1.3*size,10,9),mat(0x347b35));
- crown.position.y=2.5*size;crown.castShadow=true;g.add(crown);
-}
-[[-34,-24],[-36,2],[-35,28],[34,-25],[35,28],[16,31],[-17,32],[30,0]].forEach(p=>tree(...p));
-
-function building(x,z,w,d,color){
- const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
- box(g,0,2,0,w,4,d,mat(color));
- const roof=box(g,0,4.3,0,w+1,.5,d+1,mat(0x693a2b));
- roof.rotation.z=0;
- box(g,0,1.4,d/2+.04,w*.35,2.8,.15,mat(0x39291d));
-}
-building(-29,23,10,9,0xa45e35);
-building(28,23,12,10,0xb7a47d);
-building(0,26,7,7,0x9b7045);
-
-/* SILO */
-
-const silo=new THREE.Group();silo.position.set(19,0,24);scene.add(silo);
-const siloBody=new THREE.Mesh(new THREE.CylinderGeometry(1.6,1.6,7,18),mat(0xb9bfc0));
-siloBody.position.y=3.5;silo.add(siloBody);
-const siloRoof=new THREE.Mesh(new THREE.ConeGeometry(1.8,1.2,18),mat(0x666d70));
-siloRoof.position.y=7.6;silo.add(siloRoof);
-
-/* FAHRZEUGE UND ANBAUGERÄTE */
-
 function wheel(parent,x,y,z,r,width){
- const pivot=new THREE.Group();
- pivot.position.set(x,y,z);parent.add(pivot);
- const tire=new THREE.Mesh(new THREE.CylinderGeometry(r,r,width,24),mat(0x202020));
- tire.rotation.x=Math.PI/2;tire.castShadow=true;pivot.add(tire);
- const hub=new THREE.Mesh(new THREE.CylinderGeometry(r*.48,r*.48,width+.03,16),mat(0x999999));
- hub.rotation.x=Math.PI/2;pivot.add(hub);
- return {pivot,r};
+ const g=new THREE.Group();g.position.set(x,y,z);parent.add(g);
+ const t=new THREE.Mesh(new THREE.CylinderGeometry(r,r,width,24),mats.tire);
+ t.rotation.x=Math.PI/2;t.castShadow=true;g.add(t);
+ const hub=new THREE.Mesh(new THREE.CylinderGeometry(r*.48,r*.48,width+.025,16),mats.metal);
+ hub.rotation.x=Math.PI/2;g.add(hub);
+ const cap=new THREE.Mesh(new THREE.CylinderGeometry(r*.2,r*.2,width+.04,12),mats.darkred);
+ cap.rotation.x=Math.PI/2;g.add(cap);
+ return g;
 }
+
+/* ---------------- LANDSCHAFT ---------------- */
+
+const ground=box(scene,0,-.35,0,230,.5,230,mats.grass);
+ground.receiveShadow=true;
+
+function road(x,z,sx,sz){
+ box(scene,x,-.04,z,sx,.12,sz,mats.road);
+}
+road(0,0,150,5);
+road(-5,20,5,85);
+road(27,0,5,55);
+
+for(let i=0;i<45;i++){
+ const x=(Math.random()-.5)*180;
+ const z=(Math.random()-.5)*150;
+ if(Math.abs(z)<8||Math.abs(x+5)<8)continue;
+ const tree=new THREE.Group();tree.position.set(x,0,z);scene.add(tree);
+ cylinder(tree,0,1.2,0,.25,.32,2.4,mats.brown);
+ const crown=new THREE.Mesh(new THREE.ConeGeometry(1.6,4,7),mats.darkgreen);
+ crown.position.y=3.6;crown.castShadow=true;tree.add(crown);
+}
+
+function building(x,z,color=0x9c4932){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ box(g,0,2,0,10,4,8,new THREE.MeshStandardMaterial({color}));
+ const roof=new THREE.Mesh(new THREE.ConeGeometry(7,3,4),new THREE.MeshStandardMaterial({color:0x4c3430}));
+ roof.rotation.y=Math.PI/4;roof.position.y=5;roof.scale.set(1,1,.8);g.add(roof);
+ box(g,0,1.2,4.05,2.2,2.4,.15,mats.darkred);
+}
+building(-25,-24);
+building(25,-24,0x8b8b6a);
+building(-27,28,0x8a5a36);
+
+cylinder(scene,36,3,-20,3,3,6,new THREE.MeshStandardMaterial({color:0xb6b7ad}),24);
+cylinder(scene,36,6,-20,3,3,1,mats.metal,24);
+
+/* ---------------- FELDER ---------------- */
+
+const fields=[];
+const fieldMats={
+ untouched:new THREE.MeshStandardMaterial({color:0x6a9b43}),
+ plowed:new THREE.MeshStandardMaterial({color:0x58391f}),
+ seeded:new THREE.MeshStandardMaterial({color:0x76502b}),
+ harvested:new THREE.MeshStandardMaterial({color:0x94764e})
+};
+
+const TILE_COLS=7,TILE_ROWS=5;
+const FIELD_W=10,FIELD_D=13;
+const TILE_W=FIELD_W/TILE_COLS;
+const TILE_D=FIELD_D/TILE_ROWS;
+
+function createField(x,z,id){
+ const g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
+ box(g,0,-.08,0,FIELD_W+.6,.18,FIELD_D+.6,mats.dirt);
+ const f={id,g,x,z,plowed:Array(35).fill(false),seeded:Array(35).fill(false),
+  harvested:Array(35).fill(false),tiles:[],furrows:[],crop:null,plant:null,
+  growth:0,fertilized:false,seedPaid:false};
+ for(let r=0;r<TILE_ROWS;r++){
+  for(let c=0;c<TILE_COLS;c++){
+   const tile=new THREE.Mesh(new THREE.BoxGeometry(TILE_W-.07,.08,TILE_D-.07),fieldMats.untouched);
+   tile.position.set(-FIELD_W/2+TILE_W*(c+.5),.03,-FIELD_D/2+TILE_D*(r+.5));
+   tile.receiveShadow=true;g.add(tile);f.tiles.push(tile);
+   const lines=new THREE.Group();lines.position.copy(tile.position);g.add(lines);f.furrows.push(lines);
+  }
+ }
+ fields.push(f);return f;
+}
+
+for(let r=0;r<2;r++)for(let c=0;c<5;c++)
+ createField(-27+c*14,-12+r*30,fields.length);
+
+function updateFieldVisual(f){
+ for(let i=0;i<35;i++){
+  const tile=f.tiles[i],lines=f.furrows[i];
+  if(f.harvested[i])tile.material=fieldMats.harvested;
+  else if(f.seeded[i])tile.material=fieldMats.seeded;
+  else if(f.plowed[i])tile.material=fieldMats.plowed;
+  else tile.material=fieldMats.untouched;
+
+  lines.clear();
+  if(f.plowed[i]&&!f.harvested[i]){
+   for(let k=-1;k<=1;k++){
+    const furrow=box(lines,0,.075,k*.38,TILE_W-.15,.035,.07,mats.plowed);
+   }
+  }
+  if(f.seeded[i]&&!f.harvested[i]){
+   for(let k=-1;k<=1;k++){
+    box(lines,0,.09,k*.38,TILE_W-.18,.025,.045,mats.yellow);
+   }
+  }
+ }
+ if(f.crop){f.g.visible=true;}
+}
+
+function tileIndex(f,x,z){
+ const lx=x-f.x+FIELD_W/2;
+ const lz=z-f.z+FIELD_D/2;
+ if(lx<0||lx>=FIELD_W||lz<0||lz>=FIELD_D)return -1;
+ const c=Math.floor(lx/TILE_W),r=Math.floor(lz/TILE_D);
+ return r*TILE_COLS+c;
+}
+
+/* ---------------- TRAKTOR ---------------- */
 
 function createTractor(){
- const g=new THREE.Group(),yellow=mat(0xe5a923);
- box(g,0,.95,0,2.8,.7,1.6,yellow);
- box(g,-.45,2,0,1.35,1.45,1.4,yellow);
- box(g,-.45,2,.72,.9,.9,.05,mat(0x83c5df));
- box(g,-.45,2,-.72,.9,.9,.05,mat(0x83c5df));
- box(g,1,1.2,0,.75,.6,1.45,mat(0xf0bd2f));
- box(g,1.45,.9,0,.15,.3,1.3,mat(0x333333));
- const wheels=[];
+ const g=new THREE.Group();
+ box(g,0,1.05,0,3.3,1.05,1.65,mats.red);
+ box(g,.35,2.05,0,1.55,1.35,1.5,mats.glass);
+ box(g,.35,2.78,0,1.7,.16,1.65,mats.red);
+ box(g,1.35,1.55,0,.75,.28,1.4,mats.red);
+ box(g,-1.05,1.6,0,.8,.3,1.5,mats.red);
+ box(g,1.8,1.2,0,.35,.55,1.4,mats.darkred);
+ box(g,-.75,.65,0,.8,.18,1.2,mats.darkred);
  for(const z of [-.95,.95]){
-  wheels.push(wheel(g,-.9,.65,z,.75,.35));
-  wheels.push(wheel(g,1,.48,z,.48,.3));
+  wheel(g,1.05,.7,z,.68,.35);
+  wheel(g,-1.05,.62,z,.48,.3);
  }
- const hitch= new THREE.Group();
- hitch.position.set(-1.65,.45,0);g.add(hitch);
- const hitchBar=box(hitch,-.3,0,0,.9,.18,.2,mat(0x333333));
- const plow=new THREE.Group();
- plow.position.set(-.65,-.1,0);hitch.add(plow);
- box(plow,-.3,0,0,.2,.9,.25,mat(0x444444));
- for(let i=0;i<4;i++){
-  const blade=box(plow,-.6,-.25,-.7+i*.45,.8,.12,.14,mat(0xa6aaaa));
-  blade.rotation.z=-.35;
- }
- const trailer=new THREE.Group();
- trailer.position.set(-1.9,.2,0);
- box(trailer,-1,.55,0,2.3,.8,1.8,mat(0x3977a1));
- box(trailer,-1,1,0,2.4,.15,1.9,mat(0x315d7b));
- wheel(trailer,-1.5,.25,.95,.4,.25);
- wheel(trailer,-1.5,.25,-.95,.4,.25);
- g.userData.wheels=wheels;
+ box(g,.9,2.9,0,.12,.5,.12,mats.black);
+ const hitch=new THREE.Group();hitch.position.set(-1.65,.55,0);g.add(hitch);
  g.userData.hitch=hitch;
- g.userData.plow=plow;
- g.userData.trailer=trailer;
- g.userData.plowAttached=false;
- g.userData.plowDown=false;
- g.userData.trailerAttached=false;
- g.userData.engine=false;
+ g.userData.wheels=[];
+ g.traverse(o=>{if(o.geometry&&o.geometry.type==="CylinderGeometry")g.userData.wheels.push(o)});
  return g;
 }
+
+const tractor=createTractor();scene.add(tractor);
+tractor.position.set(-5,0,0);
+tractor.rotation.y=0;
+
+/* ---------------- PFLUG ---------------- */
+
+function createPlow(){
+ const g=new THREE.Group();
+ // Hauptträger
+ box(g,0,.35,0,1.4,.16,9.8,mats.red);
+ box(g,.15,.15,0,.35,.25,1.2,mats.darkred);
+ // breite, gut sichtbare Pflugkörper
+ for(let i=0;i<5;i++){
+  const z=-4+i*2;
+  const arm=box(g,-.25,.0,z,.9,.12,.15,mats.metal);
+  arm.rotation.y=.15;
+  const blade=new THREE.Mesh(new THREE.ConeGeometry(.62,.75,4),mats.metal);
+  blade.position.set(-.65,-.22,z);blade.rotation.z=Math.PI/2;
+  blade.castShadow=true;g.add(blade);
+ }
+ // Stützräder
+ wheel(g,.1,.15,-4.4,.42,.22);
+ wheel(g,.1,.15,4.4,.42,.22);
+ // Deichsel
+ box(g,.8,.45,0,1.6,.14,.18,mats.darkred);
+ g.position.set(-1.8,-.18,0);
+ g.visible=false;
+ return g;
+}
+
+/* ---------------- SÄMASCHINE ---------------- */
+
+function createSeeder(){
+ const g=new THREE.Group();
+ // Rahmen
+ box(g,0,.42,0,1.2,.18,10.8,mats.green);
+ // großer Saatgutbehälter
+ box(g,.35,1.15,0,1.8,1.25,2.6,mats.green);
+ const lid=box(g,.35,1.82,0,1.9,.15,2.7,mats.darkgreen);
+ // sichtbare Säschare über die gesamte Breite
+ for(let i=0;i<9;i++){
+  const z=-4.5+i*1.125;
+  box(g,-.15,.22,z,.75,.09,.1,mats.metal);
+  const disc=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.09,16),mats.metal);
+  disc.rotation.x=Math.PI/2;disc.position.set(-.48,.05,z);g.add(disc);
+  box(g,-.55,-.02,z,.12,.32,.12,mats.darkred);
+ }
+ wheel(g,.45,.18,-4.8,.42,.25);
+ wheel(g,.45,.18,4.8,.42,.25);
+ // Verbindung nach vorn zum Traktor
+ box(g,1.0,.38,0,1.7,.14,.2,mats.darkgreen);
+ g.position.set(-1.9,-.15,0);
+ g.visible=false;
+ return g;
+}
+
+/* ---------------- ANHÄNGER ---------------- */
+
+function createTrailer(){
+ const g=new THREE.Group();
+ box(g,0,1,0,3.5,.35,2.3,mats.green);
+ for(let i=0;i<4;i++){
+  const side=box(g,0,1.85,-1.05+i*.7,3.5,1.4,.12,mats.darkgreen);
+  side.position.z=-1.12;
+ }
+ for(const z of [-1.15,1.15]){
+  wheel(g,-.8,.55,z,.48,.28);wheel(g,.9,.55,z,.48,.28);
+ }
+ box(g,2.0,.65,0,1.5,.14,.18,mats.metal);
+ g.position.set(-4,0,0);g.visible=false;
+ return g;
+}
+
+const plow=createPlow();
+const seeder=createSeeder();
+const trailer=createTrailer();
+tractor.userData.hitch.add(plow,seeder);
+
+/* ---------------- MÄHDRESCHER ---------------- */
 
 function createCombine(){
- const g=new THREE.Group(),yellow=mat(0xe5b526);
- box(g,0,1,0,3.4,1.3,2,yellow);
- box(g,-.3,2,0,1.5,1.3,1.4,yellow);
- box(g,-.3,2,.73,1,.8,.05,mat(0x83c5df));
- box(g,-.3,2,-.73,1,.8,.05,mat(0x83c5df));
- box(g,1,1.6,0,.25,1.5,.25,mat(0x444444));
- const wheels=[];
- for(const z of [-1.1,1.1]){
-  wheels.push(wheel(g,-1,.65,z,.75,.35));
-  wheels.push(wheel(g,1,.55,z,.55,.3));
+ const g=new THREE.Group();
+ box(g,0,1.5,0,4.2,1.8,2.3,mats.yellow);
+ box(g,-.1,2.7,0,1.8,1.3,1.8,mats.glass);
+ box(g,-.1,3.38,0,1.95,.15,1.95,mats.yellow);
+ box(g,-1.4,2.25,0,1.2,.4,1.2,mats.darkgreen);
+ for(const z of [-1.35,1.35]){
+  wheel(g,.9,.75,z,.85,.42);
+  wheel(g,-1.1,.7,z,.65,.38);
  }
- const header=new THREE.Group();header.position.set(2,.55,0);g.add(header);
- box(header,.2,0,0,.4,.35,4.5,mat(0x333333));
- box(header,.45,-.2,0,.25,.15,4.3,mat(0xb9b9b9));
- g.userData.wheels=wheels;
- g.userData.header=header;
+ const header=new THREE.Group();
+ box(header,1.6,.5,0,.7,.3,10.8,mats.yellow);
+ for(let i=0;i<13;i++){
+  const z=-5+i*(10/12);
+  const tooth=box(header,2,.12,z,1.3,.12,.12,mats.metal);
+  tooth.rotation.z=.08;
+ }
+ const reel=new THREE.Group();
+ cylinder(reel,1.55,.9,0,.12,.12,10.4,mats.darkred,12,Math.PI/2);
+ for(let i=0;i<13;i++){
+  const z=-5+i*(10/12);
+  box(reel,1.55,.9,z,.12,.85,.1,mats.metal);
+ }
+ header.add(reel);g.add(header);
+ g.userData.header=header;g.userData.reel=reel;
  return g;
 }
 
-const tractor=createTractor(),combine=createCombine();
-scene.add(tractor,combine);
+const combine=createCombine();combine.visible=false;scene.add(combine);
 
-const tractorPark=new THREE.Vector3(-8,.05,19);
-const combinePark=new THREE.Vector3(7,.05,19);
-tractor.position.copy(tractorPark);
-combine.position.copy(combinePark);
+/* ---------------- SPIELZUSTAND ---------------- */
 
+let money=500,harvests=0,planted=0;
 let activeVehicle="tractor";
-let cameraFollow=tractor;
-let engineOn=false;
-let keys={};
-let joystickX=0,joystickY=0;
-let speed=0,steering=0;
-let camAngle=.65,camHeight=9,camDistance=13;
-let dragging=false,lastX=0,lastY=0;
+let engine=false;
+let speed=0;
+let steering=0;
+let gas=0,brake=0;
+let selectedField=0;
+let seedType="carrot";
+let fertilizerStock=3;
+let potatoStock=0;
+let trailerAttached=false;
+let plowAttached=true;
+let seederAttached=false;
+let plowLowered=true;
+let seederLowered=true;
+let seederFolded=false;
+let parked=false;
+let targetPosition=null;
+let targetRotation=0;
 
-function selectVehicle(type){
- activeVehicle=type;
- cameraFollow=type==="tractor"?tractor:combine;
- $("vehicleLabel").textContent=type==="tractor"?"🚜 Traktor ausgewählt":"🌾 Mähdrescher ausgewählt";
-}
-selectVehicle("tractor");
+const vehicleName=document.getElementById("vehicleName");
+const engineText=document.getElementById("engineText");
+const moneyText=document.getElementById("money");
+const harvestText=document.getElementById("harvests");
+const speedText=document.getElementById("speed");
 
-/* KAMERA */
-
-function updateCamera(){
- if(!cameraFollow)return;
- const offset=new THREE.Vector3(-camDistance,camHeight,0);
- offset.applyAxisAngle(new THREE.Vector3(0,1,0),cameraFollow.rotation.y);
- const target=cameraFollow.position.clone();
- target.y+=1.5;
- camera.position.lerp(target.clone().add(offset),.12);
- camera.lookAt(target);
-}
-
-renderer.domElement.addEventListener("pointerdown",e=>{
- dragging=true;lastX=e.clientX;lastY=e.clientY;
- renderer.domElement.setPointerCapture(e.pointerId);
-});
-renderer.domElement.addEventListener("pointerup",()=>dragging=false);
-renderer.domElement.addEventListener("pointercancel",()=>dragging=false);
-renderer.domElement.addEventListener("pointermove",e=>{
- if(!dragging)return;
- camAngle-=(e.clientX-lastX)*.006;
- camHeight=Math.max(4,Math.min(18,camHeight+(e.clientY-lastY)*.04));
- lastX=e.clientX;lastY=e.clientY;
-});
-renderer.domElement.addEventListener("wheel",e=>{
- camDistance=Math.max(8,Math.min(25,camDistance+e.deltaY*.02));
-});
-
-function resize(){
- const w=$("game").clientWidth,h=$("game").clientHeight;
- camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h);
-}
-window.addEventListener("resize",resize);resize();
-
-/* WASD UND TOUCHSTEUERUNG */
-
-window.addEventListener("keydown",e=>{
- const k=e.key.toLowerCase();
- if(["w","a","s","d","arrowup","arrowdown","arrowleft","arrowright"," "].includes(k))e.preventDefault();
- keys[k]=true;
-});
-window.addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
-window.addEventListener("blur",()=>keys={});
-
-function bindDriveButton(id,key){
- const el=$(id);
- el.addEventListener("pointerdown",e=>{e.preventDefault();keys[key]=true;});
- ["pointerup","pointerleave","pointercancel"].forEach(ev=>
-  el.addEventListener(ev,()=>keys[key]=false)
- );
-}
-bindDriveButton("forward","w");
-bindDriveButton("backward","s");
-bindDriveButton("left","a");
-bindDriveButton("right","d");
-
-const joystick=$("joystick"),stick=$("stick");
-let joyActive=false;
-function moveStick(e){
- const r=joystick.getBoundingClientRect();
- let x=e.clientX-(r.left+r.width/2);
- let y=e.clientY-(r.top+r.height/2);
- const max=r.width*.32;
- const len=Math.hypot(x,y);
- if(len>max){x=x/len*max;y=y/len*max;}
- joystickX=x/max;
- joystickY=y/max;
- stick.style.transform=`translate(${x}px,${y}px)`;
-}
-joystick.addEventListener("pointerdown",e=>{
- joyActive=true;joystick.setPointerCapture(e.pointerId);moveStick(e);
-});
-joystick.addEventListener("pointermove",e=>{if(joyActive)moveStick(e);});
-function releaseJoy(){
- joyActive=false;joystickX=0;joystickY=0;
- stick.style.transform="translate(0,0)";
-}
-joystick.addEventListener("pointerup",releaseJoy);
-joystick.addEventListener("pointercancel",releaseJoy);
-
-function getControls(){
- let forward=(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0);
- let turn=(keys.d||keys.arrowright?1:0)-(keys.a||keys.arrowleft?1:0);
- forward+=-joystickY;
- turn+=joystickX;
- return {forward:Math.max(-1,Math.min(1,forward)),turn:Math.max(-1,Math.min(1,turn))};
+function updateHUD(){
+ moneyText.textContent=money;
+ harvestText.textContent=harvests;
+ vehicleName.textContent=activeVehicle==="tractor"?"Traktor":"Mähdrescher";
+ engineText.textContent=engine?"Motor an":"Motor aus";
+ speedText.textContent=Math.round(Math.abs(speed)*8)+" km/h";
 }
 
-let previousTime=performance.now();
-function driveUpdate(dt){
- const model=activeVehicle==="tractor"?tractor:combine;
- const controls=getControls();
- const input=engineOn?controls.forward:0;
- const turn=engineOn?controls.turn:0;
+/* ---------------- FELDARBEIT ---------------- */
 
- speed+=(input*7-speed)*Math.min(1,dt*3);
- if(Math.abs(input)<.01)speed*=Math.max(0,1-dt*2.5);
+const cropInfo={
+ carrot:{cost:2,reward:5,time:60000,color:0xff8b24},
+ corn:{cost:5,reward:12,time:120000,color:0xeacb3e},
+ berry:{cost:8,reward:18,time:180000,color:0x9c4da9},
+ potato:{cost:5,reward:2,time:150000,color:0xc59a55}
+};
 
- steering+=(turn-steering)*Math.min(1,dt*6);
+function selected(){
+ return fields[selectedField]||fields[0];
+}
+function message(text){
+ const el=document.getElementById("message");
+ el.textContent=text;el.style.display="block";
+ clearTimeout(message.timer);
+ message.timer=setTimeout(()=>el.style.display="none",2600);
+}
+function updateAllFields(){
+ fields.forEach(updateFieldVisual);
+}
 
- model.rotation.y-=steering*speed*.035*dt*10;
- const direction=new THREE.Vector3(
-  Math.cos(model.rotation.y),0,-Math.sin(model.rotation.y)
- );
- model.position.addScaledVector(direction,speed*dt);
-
- model.position.x=Math.max(-34,Math.min(34,model.position.x));
- model.position.z=Math.max(-30,Math.min(30,model.position.z));
-
- model.userData.wheels.forEach(w=>{
-  w.pivot.rotation.z+=speed*dt/w.r;
- });
-
- if(activeVehicle==="tractor"&&tractor.userData.trailerAttached){
-  tractor.userData.trailer.position.set(-2.8,.2,0);
-  tractor.userData.trailer.rotation.y=0;
+function getToolPoints(tool,width,count=13){
+ const pts=[];
+ for(let i=0;i<count;i++){
+  const z=-width/2+(width*i/(count-1));
+  const p=tool.localToWorld(new THREE.Vector3(0,0,z));
+  pts.push(p);
  }
+ return pts;
+}
 
- if(activeVehicle==="tractor"&&tractor.userData.plowAttached){
-  tractor.userData.plow.position.y=tractor.userData.plowDown?-.3:.35;
+function stampLine(f,from,to,kind){
+ const dx=to.x-from.x,dz=to.z-from.z;
+ const dist=Math.hypot(dx,dz);
+ const steps=Math.max(1,Math.ceil(dist/.35));
+ for(let s=0;s<=steps;s++){
+  const t=s/steps;
+  const x=from.x+dx*t,z=from.z+dz*t;
+  const idx=tileIndex(f,x,z);
+  if(idx<0)continue;
+  if(kind==="plow"&&!f.plowed[idx]){
+   f.plowed[idx]=true;
+  }
+  if(kind==="seed"&&f.plowed[idx]&&!f.seeded[idx]&&!f.harvested[idx]){
+   if(!f.seedPaid){
+    const info=cropInfo[seedType];
+    if(money<info.cost){message("Nicht genug Geld für Saatgut!");return;}
+    money-=info.cost;f.seedPaid=true;f.seedType=seedType;
+   }
+   f.seeded[idx]=true;
+  }
+  if(kind==="harvest"&&f.plant&&f.growth>=1&&!f.harvested[idx]){
+   f.harvested[idx]=true;
+  }
  }
 }
 
-/* SPIELSCHLEIFE */
-
-function animate(now){
- requestAnimationFrame(animate);
- const dt=Math.min(.05,(now-previousTime)/1000);
- previousTime=now;
- driveUpdate(dt);
- updateCamera();
- renderer.render(scene,camera);
+function workWithTool(tool,width,kind){
+ const points=getToolPoints(tool,width,13);
+ const key="last_"+kind;
+ const previous=tool.userData[key];
+ if(previous&&Math.abs(speed)>.002){
+  for(let i=0;i<points.length;i++){
+   stampLine(selected(),previous[i],points[i],kind);
+  }
+ }
+ tool.userData[key]=points.map(p=>p.clone());
 }
-requestAnimationFrame(animate);
 
-/* FAHRZEUGBEDIENUNG */
+function workFields(){
+ if(!engine||Math.abs(speed)<.002)return;
+ if(activeVehicle==="tractor"){
+  const h=tractor.userData.hitch;
+  if(plowAttached&&plowLowered&&plow.visible){
+   workWithTool(plow,9.8,"plow");
+  }
+  if(seederAttached&&seederLowered&&seeder.visible){
+   workWithTool(seeder,10.5,"seed");
+  }
+ }else{
+  const head=combine.userData.header;
+  workWithTool(head,10.5,"harvest");
+ }
+}
 
-function toggleEngine(){
- engineOn=!engineOn;
- $("tractorInfo").textContent=engineOn?"Motor läuft.":"Motor ausgeschaltet.";
+function finishFieldChecks(){
+ for(const f of fields){
+  if(f.plowed.every(Boolean)&&!f.tilled){
+   f.tilled=true;
+   message("Feld "+(f.id+1)+" vollständig gepflügt!");
+  }
+  if(f.seeded.every(Boolean)&&!f.plant){
+   f.plant=f.seedType||seedType;
+   f.growth=0;
+   f.growthStart=Date.now();
+   planted++;
+   message("Feld vollständig gesät!");
+  }
+  if(f.harvested.every(Boolean)&&f.plant){
+   const info=cropInfo[f.plant];
+   const amount=f.plant==="potato"?5:1;
+   if(f.plant==="potato")potatoStock+=amount;
+   else money+=info.reward;
+   harvests+=amount;
+   f.plant=null;f.growth=0;f.fertilized=false;f.seedPaid=false;
+   f.plowed.fill(false);f.seeded.fill(false);f.harvested.fill(false);
+   f.tilled=false;
+   message(f.plant==="potato"?"Kartoffeln geerntet!":"Ernte erfolgreich!");
+  }
+ }
 }
-function parkVehicle(){
- const model=activeVehicle==="tractor"?tractor:combine;
- const pos=activeVehicle==="tractor"?tractorPark:combinePark;
- model.position.lerp(pos,.2);
+
+/* ---------------- FELD MENÜ / WIRTSCHAFT ---------------- */
+
+function openMenu(type){
+ const panel=document.getElementById("menuPanel");
+ const title=document.getElementById("menuTitle");
+ const content=document.getElementById("menuContent");
+ panel.style.display="block";
+ content.innerHTML="";
+ const add=(label,fn)=>{const b=document.createElement("button");b.textContent=label;b.onclick=fn;content.appendChild(b);};
+ if(type==="vehicle"){
+  title.textContent="Fahrzeuge";
+  add("🚜 Traktor auswählen",()=>selectVehicle("tractor"));
+  add("🌾 Mähdrescher auswählen",()=>selectVehicle("combine"));
+  add(engine?"Motor ausschalten":"Motor starten",toggleEngine);
+  add("Zum Hof zurückfahren",parkVehicle);
+ }
+ if(type==="tools"){
+  title.textContent="Anbaugeräte";
+  add((plowAttached?"Pflug abkuppeln":"Pflug ankuppeln"),togglePlow);
+  add((plowLowered?"Pflug anheben":"Pflug absenken"),()=>{plowLowered=!plowLowered;plow.position.y=plowLowered?-.18:.5;message(plowLowered?"Pflug abgesenkt":"Pflug angehoben");});
+  add((seederAttached?"Sämaschine abkuppeln":"Sämaschine ankuppeln"),toggleSeeder);
+  add((seederLowered?"Sämaschine anheben":"Sämaschine absenken"),()=>{seederLowered=!seederLowered;seeder.position.y=seederLowered?-.15:.55;message(seederLowered?"Sämaschine abgesenkt":"Sämaschine angehoben");});
+  add(seederFolded?"Sämaschine ausklappen":"Sämaschine einklappen",toggleSeederFold);
+  add(trailerAttached?"Anhänger abkuppeln":"Anhänger ankuppeln",toggleTrailer);
+ }
+ if(type==="farm"){
+  title.textContent="Feldverwaltung";
+  fields.forEach(f=>add("Feld "+(f.id+1)+(selectedField===f.id?" ✓":""),()=>{selectedField=f.id;message("Feld "+(f.id+1)+" ausgewählt");closeMenu();}));
+  add("Pflügen: Fahre mit abgesenktem Pflug über das Feld",()=>message("Fahre mit dem Pflug über das ausgewählte Feld."));
+  add("Säen: Fahre mit abgesenkter Sämaschine über das Feld",()=>message("Säe die zuvor gepflügten Stellen."));
+  add("Ernten: Fahre mit dem Mähdrescher über das reife Feld",()=>message("Ernte mit dem Mähdrescher."));
+ }
+ if(type==="shop"){
+  title.textContent="Hofladen";
+  add("Karottensamen kaufen (2 Münzen)",()=>{seedType="carrot";message("Karottensaat ausgewählt");});
+  add("Maissaat kaufen (5 Münzen)",()=>{seedType="corn";message("Maissaat ausgewählt");});
+  add("Beerensamen kaufen (8 Münzen)",()=>{seedType="berry";message("Beerensaat ausgewählt");});
+  add("Kartoffelsaat kaufen (5 Münzen)",()=>{seedType="potato";message("Kartoffelsaat ausgewählt");});
+  add("Dünger kaufen (2 Münzen)",()=>{if(money>=2){money-=2;fertilizerStock++;updateHUD();message("Dünger gekauft");}else message("Nicht genug Geld");});
+  add("Kartoffeln verkaufen ("+potatoStock+" Stück)",()=>{if(potatoStock>0){money+=potatoStock*2;potatoStock=0;updateHUD();message("Kartoffeln verkauft");}});
+ }
+ if(type==="settings"){
+  title.textContent="Einstellungen";
+  add("Spielstand speichern",saveGame);
+  add("Spielstand zurücksetzen",resetGame);
+ }
+ updateHUD();
 }
+function closeMenu(){document.getElementById("menuPanel").style.display="none";}
+function selectVehicle(v){
+ engine=false;speed=0;activeVehicle=v;
+ tractor.visible=v==="tractor";combine.visible=v==="combine";
+ if(v==="combine"){
+  combine.position.copy(tractor.position);
+  combine.rotation.y=tractor.rotation.y;
+ }
+ updateHUD();closeMenu();
+}
+function toggleEngine(){engine=!engine;speed=0;updateHUD();message(engine?"Motor gestartet":"Motor ausgeschaltet");}
 function togglePlow(){
- const d=tractor.userData;
- d.plowAttached=!d.plowAttached;
- if(d.plowAttached)d.hitch.add(d.plow);
- else tractor.add(d.plow);
- $("equipmentInfo").textContent=
-  (d.plowAttached?"Pflug angekuppelt":"Pflug abgekuppelt")+" · "+
-  (d.trailerAttached?"Anhänger angekuppelt":"Anhänger abgekuppelt");
+ if(activeVehicle!=="tractor"){message("Wähle zuerst den Traktor.");return;}
+ plowAttached=!plowAttached;plow.visible=plowAttached;
+ if(!plowAttached)plow.userData.last_plow=null;
+ closeMenu();message(plowAttached?"Pflug angekuppelt":"Pflug abgekuppelt");
+}
+function toggleSeeder(){
+ if(activeVehicle!=="tractor"){message("Wähle zuerst den Traktor.");return;}
+ seederAttached=!seederAttached;seeder.visible=seederAttached;
+ if(!seederAttached)seeder.userData.last_seed=null;
+ closeMenu();message(seederAttached?"Sämaschine angekuppelt":"Sämaschine abgekuppelt");
+}
+function toggleSeederFold(){
+ seederFolded=!seederFolded;
+ seeder.scale.z=seederFolded?.55:1;
+ message(seederFolded?"Sämaschine eingeklappt":"Sämaschine ausgeklappt");
 }
 function toggleTrailer(){
- const d=tractor.userData;
- d.trailerAttached=!d.trailerAttached;
- if(d.trailerAttached)tractor.add(d.trailer);
- else scene.add(d.trailer);
- $("equipmentInfo").textContent=
-  (d.plowAttached?"Pflug angekuppelt":"Pflug abgekuppelt")+" · "+
-  (d.trailerAttached?"Anhänger angekuppelt":"Anhänger abgekuppelt");
+ trailerAttached=!trailerAttached;
+ trailer.visible=trailerAttached;
+ closeMenu();message(trailerAttached?"Anhänger angekuppelt":"Anhänger abgekuppelt");
 }
-function togglePlowDown(){
- if(!tractor.userData.plowAttached){
-  alert("Kupple zuerst den Pflug an!");
-  return;
- }
- tractor.userData.plowDown=!tractor.userData.plowDown;
- $("equipmentInfo").textContent=tractor.userData.plowDown?"Pflug abgesenkt":"Pflug angehoben";
+function parkVehicle(){
+ engine=false;speed=0;
+ targetPosition=new THREE.Vector3(-5,0,0);
+ targetRotation=0;
+ closeMenu();message("Fahrzeug fährt zum Hof zurück.");
 }
 
-/* LANDWIRTSCHAFT */
+/* ---------------- DÜNGER UND WACHSTUM ---------------- */
 
-function left(start,duration){
- return Math.max(0,Math.ceil((duration-(Date.now()-start))/1000));
-}
-
-function render(){
- $("coins").textContent=coins;
- $("harvests").textContent=harvests;
- $("planted").textContent=fields.filter(f=>f.plant).length;
- $("inventory").textContent="🥔 Kartoffeln im Vorrat: "+(inventory.potato||0)+" / 30";
- fields.forEach((f,i)=>updateFieldVisual(i));
-
- $("chosen").textContent="Feld "+(selected+1)+" ausgewählt";
- const f=fields[selected];
- let status="Wiese – zuerst pflügen.",p=0,t="";
- if(f.plowing){
-  status="🚜 Feld wird gepflügt.";
-  p=Math.min(100,(Date.now()-f.plowing)/PLOW_TIME*100);
-  t="Noch "+left(f.plowing,PLOW_TIME)+" Sekunden";
- }else if(f.plant){
-  const c=crops[f.plant.type];
-  const elapsed=Date.now()-f.plant.started;
-  const remaining=left(f.plant.started,f.plant.duration);
-  status=c.emoji+" "+c.name+(remaining===0?" ist erntereif!":" wächst.");
-  p=Math.min(100,elapsed/f.plant.duration*100);
-  t=remaining===0?"Bereit zur Ernte":"Noch "+remaining+" Sekunden";
- }else if(f.tilled)status="Gepflügter Acker – bereit zum Säen.";
-
- $("status").textContent=status;
- $("bar").style.width=p+"%";
- $("timer").textContent=t;
-}
-
-function plowField(){
- const f=fields[selected];
- if(!tractor.userData.plowAttached||!tractor.userData.plowDown){
-  alert("Du brauchst einen angekuppelten und abgesenkten Pflug!");
-  return;
- }
- if(f.tilled||f.plant||f.plowing){
-  alert("Dieses Feld kann gerade nicht gepflügt werden.");
-  return;
- }
- const distance=tractor.position.distanceTo(fieldPositions[selected]);
- if(distance>9){
-  alert("Fahre mit dem Traktor näher an das Feld.");
-  return;
- }
- f.plowing=Date.now();
- save();render();
-}
-
-function plant(){
- const f=fields[selected],type=$("seed").value,c=crops[type];
- if(!f.tilled||f.plant||f.plowing){
-  alert("Das Feld muss zuerst fertig gepflügt sein.");
-  return;
- }
- if(type==="potato"){
-  if((inventory.potato||0)<1){alert("Kaufe zuerst eine Saatkartoffel.");return;}
-  inventory.potato--;
- }else{
-  if(coins<c.price){alert("Nicht genug Münzen!");return;}
-  coins-=c.price;
- }
- f.plant={type,started:Date.now(),duration:c.time};
- f.fertilized=false;
- save();render();
-}
-
-function buyPotato(){
- if((inventory.potato||0)>=30||coins<5){
-  alert("Vorrat voll oder zu wenig Münzen.");return;
- }
- coins-=5;inventory.potato++;save();render();
-}
-function sellPotatoes(amount){
- const n=inventory.potato||0;
- if(n<1){alert("Keine Kartoffeln vorhanden.");return;}
- const q=amount==="all"?n:1;
- inventory.potato-=q;coins+=q*2;save();render();
-}
 function fertilize(){
- const f=fields[selected];
- if(!f.plant){alert("Hier wächst nichts.");return;}
- if(f.fertilized){alert("Dieses Feld wurde bereits gedüngt.");return;}
- if(coins<2){alert("Nicht genug Münzen.");return;}
- const remaining=Math.max(0,f.plant.duration-(Date.now()-f.plant.started));
- f.plant.started=Date.now();
- f.plant.duration=Math.ceil(remaining*.75);
- f.fertilized=true;coins-=2;save();render();
-}
-function harvest(){
- const f=fields[selected];
- if(!f.plant){alert("Hier wächst nichts.");return;}
- if(Date.now()-f.plant.started<f.plant.duration){alert("Die Pflanze ist noch nicht reif.");return;}
- if(combine.position.distanceTo(fieldPositions[selected])>10){
-  alert("Fahre mit dem Mähdrescher näher an das Feld.");return;
- }
- if(f.plant.type==="potato"){
-  const gained=Math.min(5,30-(inventory.potato||0));
-  inventory.potato=(inventory.potato||0)+gained;
-  alert(gained+" Kartoffeln geerntet!");
- }else coins+=crops[f.plant.type].reward;
- harvests++;
- f.plant=null;f.tilled=false;f.fertilized=false;
- save();render();
+ const f=selected();
+ if(!f.plant){message("Auf diesem Feld wächst noch nichts.");return;}
+ if(f.fertilized){message("Dieses Feld wurde bereits gedüngt.");return;}
+ if(fertilizerStock<=0){message("Kein Dünger vorhanden.");return;}
+ fertilizerStock--;f.fertilized=true;
+ f.growth=Math.min(1,f.growth+.25);
+ message("Feld gedüngt!");
 }
 
-function refresh(){
- fields.forEach(f=>{
-  if(f.plowing&&Date.now()-f.plowing>=PLOW_TIME){
-   f.plowing=null;f.tilled=true;
+/* ---------------- STEUERUNG ---------------- */
+
+const keys={};
+addEventListener("keydown",e=>{
+ keys[e.key.toLowerCase()]=true;
+ if(e.key===" "){e.preventDefault();toggleEngine();}
+});
+addEventListener("keyup",e=>keys[e.key.toLowerCase()]=false);
+
+function holdButton(id,down,up){
+ const el=document.getElementById(id);
+ el.addEventListener("pointerdown",e=>{e.preventDefault();down();});
+ ["pointerup","pointercancel","pointerleave"].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();up();}));
+}
+holdButton("gas",()=>gas=1,()=>gas=0);
+holdButton("brake",()=>brake=1,()=>brake=0);
+holdButton("left",()=>steering=1,()=>{if(steering===1)steering=0;});
+holdButton("right",()=>steering=-1,()=>{if(steering===-1)steering=0;});
+
+/* ---------------- FAHRPHYSIK ---------------- */
+
+const clock=new THREE.Clock();
+
+function updateVehicle(dt){
+ const v=activeVehicle==="tractor"?tractor:combine;
+ const forward=(keys.w||keys.arrowup)?1:0;
+ const backward=(keys.s||keys.arrowdown)?1:0;
+ const turnLeft=(keys.a||keys.arrowleft)?1:0;
+ const turnRight=(keys.d||keys.arrowright)?1:0;
+ const accel=Math.max(gas,forward);
+ const reverse=Math.max(brake,backward);
+ const turn=steering||turnLeft-turnRight;
+
+ if(targetPosition){
+  const delta=targetPosition.clone().sub(v.position);
+  if(delta.length()<.3){targetPosition=null;message("Fahrzeug ist am Hof.");}
+  else{
+   const desired=Math.atan2(-Math.sin(targetRotation),Math.cos(targetRotation));
+   let diff=targetRotation-v.rotation.y;
+   while(diff>Math.PI)diff-=Math.PI*2;
+   while(diff< -Math.PI)diff+=Math.PI*2;
+   v.rotation.y+=THREE.MathUtils.clamp(diff,-dt*1.8,dt*1.8);
+   if(Math.abs(diff)<.25)v.position.addScaledVector(delta.clone().normalize(),dt*2);
   }
- });
- save();render();
+ }
+ if(engine&&!targetPosition){
+  speed+=accel*dt*5;
+  speed-=reverse*dt*8;
+  speed*=Math.pow(.985,dt*60);
+  speed=THREE.MathUtils.clamp(speed,-3.2,8);
+  if(Math.abs(speed)>.05){
+   v.rotation.y+=turn*dt*1.25*(speed>=0?1:-1);
+   const dir=new THREE.Vector3(Math.cos(v.rotation.y),0,-Math.sin(v.rotation.y));
+   v.position.addScaledVector(dir,speed*dt);
+  }
+ }else speed*=.9;
+
+ if(activeVehicle==="tractor"){
+  const h=tractor.userData.hitch;
+  if(trailerAttached){
+   trailer.visible=true;
+   const behind=new THREE.Vector3(-Math.cos(tractor.rotation.y),0,Math.sin(tractor.rotation.y));
+   trailer.position.copy(tractor.position).addScaledVector(behind,5);
+   trailer.position.y=0;
+   trailer.rotation.y=tractor.rotation.y;
+  }
+ }else{
+  combine.userData.reel.rotation.x+=dt*speed*1.4;
+ }
+ updateHUD();
 }
 
-/* FELDER AUSWÄHLEN */
+/* ---------------- WACHSTUM UND FELDARBEIT ---------------- */
 
-const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
-const fieldClickMeshes=fieldMeshes.map(f=>f.base);
-renderer.domElement.addEventListener("click",e=>{
+function updateGrowth(){
+ const now=Date.now();
+ for(const f of fields){
+  if(f.plant&&f.growth<1){
+   const total=cropInfo[f.plant].time*(f.fertilized?.75:1);
+   f.growth=Math.min(1,(now-f.growthStart)/total);
+   if(f.growth>=1)message("Feld "+(f.id+1)+" ist erntereif!");
+  }
+ }
+}
+
+function updateCrops(){
+ for(const f of fields){
+  if(!f.plant)continue;
+  if(!f.crop){
+   f.crop=new THREE.Group();f.g.add(f.crop);
+   for(let i=0;i<25;i++){
+    const r=Math.floor(i/5),c=i%5;
+    const plant=new THREE.Group();
+    const stem=box(plant,0,.35,0,.08,.7,.08,mats.green);
+    const leaf=box(plant,.12,.5,.08,.3,.08,.12,mats.darkgreen);
+    plant.position.set(-4.5+c*2.2,.1,-5+r*2.4);
+    f.crop.add(plant);
+   }
+  }
+  f.crop.visible=f.growth>.05;
+  f.crop.scale.y=.25+f.growth*.75;
+  f.crop.children.forEach((p,i)=>{
+   const info=cropInfo[f.plant];
+   p.visible=f.seeded[Math.min(34,Math.floor(i/5)*7+Math.floor(i%5*1.4))]&&!f.harvested[Math.min(34,Math.floor(i/5)*7+Math.floor(i%5*1.4))];
+   p.children[1].material=info.color===0xff8b24?mats.yellow:mats.darkgreen;
+  });
+ }
+}
+
+/* ---------------- ARBEITSAUSFÜHRUNG ---------------- */
+
+function tickWork(){
+ if(!engine||Math.abs(speed)<.02)return;
+ if(activeVehicle==="tractor"){
+  if(plowAttached&&plowLowered){
+   workWithTool(plow,9.8,"plow");
+  }else plow.userData.last_plow=null;
+  if(seederAttached&&seederLowered&&!seederFolded){
+   workWithTool(seeder,10.5,"seed");
+  }else seeder.userData.last_seed=null;
+ }else{
+  workWithTool(combine.userData.header,10.5,"harvest");
+ }
+ finishFieldChecks();
+ updateAllFields();
+ updateHUD();
+}
+
+/* ---------------- KAMERA ---------------- */
+
+const cameraTarget=new THREE.Vector3();
+function updateCamera(dt){
+ const v=activeVehicle==="tractor"?tractor:combine;
+ const offset=new THREE.Vector3(13,16,20);
+ offset.applyAxisAngle(new THREE.Vector3(0,1,0),v.rotation.y);
+ const wanted=v.position.clone().add(offset);
+ camera.position.lerp(wanted,1-Math.pow(.04,dt));
+ cameraTarget.lerp(v.position.clone().add(new THREE.Vector3(0,1,0)),1-Math.pow(.03,dt));
+ camera.lookAt(cameraTarget);
+}
+
+/* ---------------- SPEICHERN ---------------- */
+
+function saveGame(){
+ const data={
+  money,harvests,planted,potatoStock,fertilizerStock,
+  fields:fields.map(f=>({
+   plowed:f.plowed,seeded:f.seeded,harvested:f.harvested,
+   plant:f.plant,growth:f.growth,fertilized:f.fertilized,
+   seedPaid:f.seedPaid,seedType:f.seedType,growthStart:f.growthStart
+  }))
+ };
+ localStorage.setItem("farm2dSave",JSON.stringify(data));
+ message("Spielstand gespeichert!");
+}
+function loadGame(){
+ try{
+  const data=JSON.parse(localStorage.getItem("farm2dSave"));
+  if(!data)return;
+  money=data.money??500;harvests=data.harvests??0;planted=data.planted??0;
+  potatoStock=data.potatoStock??0;fertilizerStock=data.fertilizerStock??3;
+  if(Array.isArray(data.fields)){
+   data.fields.forEach((d,i)=>{
+    const f=fields[i];if(!f)return;
+    f.plowed=Array.isArray(d.plowed)?d.plowed:Array(35).fill(!!d.tilled);
+    f.seeded=Array.isArray(d.seeded)?d.seeded:Array(35).fill(!!d.plant);
+    f.harvested=Array.isArray(d.harvested)?d.harvested:Array(35).fill(false);
+    f.plant=d.plant||null;f.growth=d.growth||0;
+    f.fertilized=!!d.fertilized;f.seedPaid=!!d.seedPaid;
+    f.seedType=d.seedType||d.plant||seedType;
+    f.growthStart=d.growthStart||Date.now()-f.growth*cropInfo[f.plant||"carrot"].time;
+    f.tilled=f.plowed.every(Boolean);
+   });
+  }
+  updateAllFields();updateHUD();
+ }catch(e){console.warn("Spielstand konnte nicht geladen werden",e);}
+}
+function resetGame(){
+ if(!confirm("Möchtest du deinen Spielstand wirklich zurücksetzen?"))return;
+ localStorage.removeItem("farm2dSave");location.reload();
+}
+
+/* ---------------- FELDSELEKTION PER KLICK ---------------- */
+
+let pointerDown=null;
+renderer.domElement.addEventListener("pointerdown",e=>{
+ pointerDown={x:e.clientX,y:e.clientY};
+});
+renderer.domElement.addEventListener("pointerup",e=>{
+ if(!pointerDown)return;
+ const moved=Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y);
+ pointerDown=null;if(moved>8)return;
  const rect=renderer.domElement.getBoundingClientRect();
- pointer.x=((e.clientX-rect.left)/rect.width)*2-1;
- pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;
- raycaster.setFromCamera(pointer,camera);
- const hits=raycaster.intersectObjects(fieldClickMeshes);
+ const mouse=new THREE.Vector2(
+  ((e.clientX-rect.left)/rect.width)*2-1,
+  -((e.clientY-rect.top)/rect.height)*2+1
+ );
+ const ray=new THREE.Raycaster();ray.setFromCamera(mouse,camera);
+ const hits=ray.intersectObjects(fields.flatMap(f=>f.tiles),false);
  if(hits.length){
-  const index=fieldClickMeshes.indexOf(hits[0].object);
-  if(index>=0){selected=index;render();}
+  const tile=hits[0].object;
+  const f=fields.find(f=>f.tiles.includes(tile));
+  if(f){selectedField=f.id;message("Feld "+(f.id+1)+" ausgewählt");}
  }
 });
 
-render();
-setInterval(refresh,1000);
+/* ---------------- ANIMATION ---------------- */
+
+function animate(){
+ requestAnimationFrame(animate);
+ const dt=Math.min(clock.getDelta(),.04);
+ updateVehicle(dt);
+ tickWork();
+ updateGrowth();
+ updateCrops();
+ updateCamera(dt);
+ renderer.render(scene,camera);
+}
+animate();
+
+addEventListener("resize",()=>{
+ camera.aspect=innerWidth/innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(innerWidth,innerHeight);
+});
+
+loadGame();
+updateAllFields();
+updateHUD();
+message("Willkommen auf deinem Bauernhof!");
 </script>
 </body>
 </html>
