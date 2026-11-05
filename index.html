@@ -3,85 +3,62 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#4f8537">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Mini Farm 2D</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#dceecb;color:#263b20;font-family:system-ui,sans-serif}
-header{position:sticky;top:0;z-index:5;background:#4f8537;color:white;text-align:center;padding:10px}
-h1{font-size:23px;margin:0 0 5px}
-.stats{display:flex;justify-content:center;gap:14px;flex-wrap:wrap;font-weight:800}
+body{margin:0;background:#dceecb;color:#263b20;font-family:Arial,sans-serif}
+header{background:#4f8537;color:white;text-align:center;padding:12px;position:sticky;top:0;z-index:10}
+h1{margin:0 0 7px;font-size:24px}
+.stats{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;font-weight:bold}
 main{max-width:900px;margin:auto;padding:12px}
-.scene{background:#a4d276;border:5px solid #527d38;border-radius:18px;padding:10px}
-.sky{display:flex;justify-content:space-between;color:white;font-weight:800;text-shadow:1px 2px #527d38;padding:4px 8px}
-.world{
- height:510px;position:relative;overflow:hidden;
- border:4px solid #527d38;border-radius:12px;
- background-color:#83b94e;
- background-image:radial-gradient(#9bca65 1.5px,transparent 1.5px);
- background-size:23px 23px
-}
-.path{position:absolute;top:48%;height:55px;left:0;right:0;background:#c6a36c;border-block:5px solid #a78352}
-.fieldgrid{
- position:absolute;inset:12px 10px 100px;
- display:grid;grid-template-columns:repeat(5,1fr);
- grid-template-rows:repeat(2,1fr);gap:9px
-}
-.plot{
- border:3px solid #754b2d;border-radius:8px;
- background:repeating-linear-gradient(0deg,#98633b 0 9px,#87552f 9px 13px);
- color:white;font-weight:800;text-shadow:1px 2px #54351f;
- display:flex;flex-direction:column;justify-content:center;
- align-items:center;text-align:center;padding:3px;
- font-size:clamp(10px,2.5vw,15px);
- box-shadow:0 3px #684328;min-width:0
-}
+.scene,.controls,.shop{background:white;padding:12px;border-radius:15px;margin-bottom:12px}
+.scene{background:#a4d276;border:5px solid #527d38}
+.world{height:570px;position:relative;overflow:hidden;border:4px solid #527d38;border-radius:10px;background:#83b94e;background-image:radial-gradient(#9bca65 1.5px,transparent 1.5px);background-size:23px 23px}
+.fieldgrid{position:absolute;inset:12px 12px 105px;z-index:2;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(2,1fr);gap:12px}
+.plot{min-width:0;border:3px solid #754b2d;border-radius:8px;background:repeating-linear-gradient(0deg,#98633b 0 9px,#87552f 9px 13px);color:white;text-shadow:1px 2px #54351f;font-weight:bold;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:3px;font-size:clamp(10px,2.5vw,15px);box-shadow:0 3px #684328}
 .plot.grass{background:repeating-linear-gradient(0deg,#79b64b 0 8px,#6da341 8px 12px);border-color:#4c7934}
-.plot.selected{outline:4px solid #ffe052;outline-offset:1px}
-.crop{font-size:clamp(19px,4vw,28px)}
-.vehicle{
- position:absolute;z-index:4;width:115px;height:65px;
- transition:left .6s,top .6s,bottom .6s;
- filter:drop-shadow(2px 3px 1px #42652d);
- pointer-events:none
-}
-.vehicle svg{width:100%;height:100%;overflow:visible}
-#tractor{left:2%;top:5%}
-#combine{left:2%;top:20%;width:145px;height:106px}
-.parking{
- position:absolute;left:0;right:0;bottom:0;height:78px;
- background:#b58d58;border-top:5px solid #8b693f;
- display:flex;align-items:center;justify-content:space-around;
- z-index:2;padding:5px
-}
-.parking-slot{
- width:42%;height:58px;border:3px dashed #725333;
- border-radius:9px;background:#d5b47e;color:#614727;
- font-weight:800;font-size:12px;display:flex;
- align-items:center;justify-content:center;text-align:center
-}
-.controls,.shop{
- background:white;border-radius:15px;padding:13px;
- margin-top:12px;box-shadow:0 3px #c3d8ae
-}
-h2{font-size:18px;margin:0 0 8px}
-h3{font-size:15px;margin:12px 0 6px}
+.plot.selected{outline:4px solid #ffe052}
+.crop{font-size:25px}
+
+/* Wegenetz */
+.roads{position:absolute;inset:0;z-index:1;pointer-events:none}
+.road{position:absolute;background:#b99a70;border:3px solid #806746;box-shadow:inset 0 0 0 2px #cbb18c}
+.road.main{left:0;right:0;top:48%;height:32px}
+.road.vertical{top:0;bottom:90px;width:22px}
+.road.v1{left:10%}
+.road.v2{left:30%}
+.road.v3{left:50%}
+.road.v4{left:70%}
+.road.v5{left:90%}
+.road.access{left:0;right:0;bottom:82px;height:22px}
+.road.parking-access{left:50%;top:48%;bottom:82px;width:22px;transform:translateX(-50%)}
+
+.vehicle{position:absolute;z-index:4;transition:left 3s linear,top 3s linear;pointer-events:none;filter:drop-shadow(2px 3px 2px #42652d)}
+#tractor{width:105px;height:58px}
+#combine{width:125px;height:92px}
+.vehicle svg{width:100%;height:100%}
+.parking{position:absolute;bottom:0;left:0;right:0;height:82px;background:#b58d58;border-top:5px solid #806746;z-index:3;display:flex;align-items:center;justify-content:space-around}
+.parking-slot{width:43%;height:62px;border:3px dashed #725333;border-radius:9px;background:#d5b47e;color:#614727;font-size:13px;font-weight:bold;display:flex;align-items:center;justify-content:center;text-align:center}
+h2{font-size:18px;margin:0 0 10px}
+h3{font-size:15px;margin:13px 0 6px}
 .row{display:flex;gap:8px;flex-wrap:wrap}
-button,select{font:inherit;border:0;border-radius:10px;padding:11px;font-weight:750}
+button,select{font:inherit;border:0;border-radius:9px;padding:11px;font-weight:bold}
 button{background:#4f8537;color:white;flex:1;min-width:125px;box-shadow:0 3px #356126}
 button.alt{background:#e8f0df;color:#304b27;box-shadow:0 3px #c5d5b6}
-button:disabled{opacity:.45;cursor:not-allowed}
-select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
-.progress{height:10px;background:#e2e2e2;border-radius:20px;overflow:hidden;margin:7px 0}
-.bar{height:100%;width:0;background:#70a943}
-.note{font-size:13px;color:#607653;margin:7px 0 0}
-.vehicle-info{font-size:13px;background:#edf4e7;padding:8px;border-radius:8px;margin-top:8px}
+button:disabled{opacity:.4}
+select{width:100%;background:#edf4e7;margin:5px 0 10px}
+.progress{height:10px;background:#ddd;border-radius:20px;overflow:hidden;margin:8px 0}
+.bar{height:100%;background:#70a943;width:0}
+.note{font-size:13px;color:#607653;margin:7px 0}
+.info{background:#edf4e7;border-radius:8px;padding:8px;font-size:13px;margin-top:7px}
 @media(max-width:520px){
- .fieldgrid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(5,1fr);inset:10px 8px 100px}
- .world{height:650px}
- .vehicle{width:95px;height:55px}
- #combine{width:120px;height:88px}
+ .world{height:680px}
+ .fieldgrid{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(5,1fr);inset:10px 8px 105px;gap:9px}
+ .road.vertical{display:none}
+ .road.main{top:50%}
+ #tractor{width:85px;height:48px}
+ #combine{width:105px;height:77px}
 }
 </style>
 </head>
@@ -94,35 +71,45 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 <span>🌱 <b id="planted">0</b> bepflanzt</span>
 </div>
 </header>
+
 <main>
 <div class="scene">
-<div class="sky"><span>☀️ Sonnental</span><span>2D FARM</span></div>
 <div class="world" id="world">
-<div class="path"></div>
+
+<div class="roads">
+<div class="road main"></div>
+<div class="road vertical v1"></div>
+<div class="road vertical v2"></div>
+<div class="road vertical v3"></div>
+<div class="road vertical v4"></div>
+<div class="road vertical v5"></div>
+<div class="road access"></div>
+<div class="road parking-access"></div>
+</div>
+
 <div class="fieldgrid" id="fieldgrid"></div>
 
-<!-- Traktor -->
-<div class="vehicle" id="tractor" aria-label="Traktor">
+<div class="vehicle" id="tractor">
 <svg viewBox="0 0 155 75">
-<path d="M17 42 L5 49 L5 57" fill="none" stroke="#343a32" stroke-width="5"/>
-<path d="M5 53 L0 64 L15 61 L22 49" fill="#777d79" stroke="#343a32" stroke-width="2"/>
-<path d="M7 60 L18 64 L27 56" fill="none" stroke="#343a32" stroke-width="3"/>
 <circle cx="49" cy="57" r="16" fill="#292d2b"/>
-<circle cx="49" cy="57" r="7" fill="#aeb5ad"/>
+<circle cx="49" cy="57" r="7" fill="#aaa"/>
 <circle cx="111" cy="59" r="11" fill="#292d2b"/>
-<circle cx="111" cy="59" r="4" fill="#aeb5ad"/>
+<circle cx="111" cy="59" r="4" fill="#aaa"/>
 <path d="M32 29 H111 L128 49 H27 Z" fill="#e5a923" stroke="#80531c" stroke-width="3"/>
 <path d="M66 8 H94 L105 31 H60 Z" fill="#e7b52c" stroke="#80531c" stroke-width="3"/>
 <path d="M71 12 H90 L98 27 H68 Z" fill="#9dd4e4" stroke="#486b70" stroke-width="2"/>
-<path d="M25 31 H49 V45 H25 Z" fill="#df9d20" stroke="#80531c" stroke-width="2"/>
 <rect x="49" y="31" width="65" height="8" rx="3" fill="#f2c13b"/>
-<rect x="119" y="35" width="8" height="7" rx="2" fill="#fff2a8"/>
+
+<!-- Pflug am Heck -->
+<path d="M31 43 L18 48 L10 62" fill="none" stroke="#343434" stroke-width="4" stroke-linecap="round"/>
+<path d="M10 61 L5 68 L32 68 L27 61 Z" fill="#777" stroke="#343434" stroke-width="2"/>
+<path d="M8 66 L13 72 M17 66 L22 72 M26 66 L31 72" stroke="#c5c5c5" stroke-width="3" stroke-linecap="round"/>
 </svg>
 </div>
 
-<!-- Neuer Mähdrescher, nach rechts gedreht -->
-<div class="vehicle" id="combine" aria-label="Mähdrescher">
-<svg viewBox="0 0 600 440" role="img" aria-label="Gelber Mähdrescher">
+<!-- Mähdrescher -->
+<div class="vehicle" id="combine">
+<svg viewBox="0 0 600 440">
 <g stroke="#080808" stroke-width="13" stroke-linejoin="round" stroke-linecap="round">
 <path d="M290 90 L290 40 Q290 18 315 18 H515 L570 48 L552 75 L510 55 H320 V90" fill="#f5a900"/>
 <path d="M80 270 H500 V350 Q500 385 470 385 H90 Q65 385 65 355 V295 Z" fill="#303030"/>
@@ -133,25 +120,17 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 <circle cx="430" cy="355" r="23" fill="#bfc3c0" stroke-width="10"/>
 <path d="M420 80 H555 L525 205 H420 Z" fill="#f2ca35"/>
 <path d="M450 110 H535 L515 180 H450 Z" fill="#54b6d5" stroke-width="10"/>
-<path d="M125 80 H420 L450 125 H110 Z" fill="#333333"/>
+<path d="M125 80 H420 L450 125 H110 Z" fill="#333"/>
 <path d="M70 125 H420 V235 L70 260 Z" fill="#e3c443"/>
 <path d="M70 235 L420 205 L445 260 L175 300 L90 275 Z" fill="#e3c443"/>
 <path d="M535 285 L590 325 V390 H510 V300 Z" fill="#e5bf35"/>
 <path d="M510 300 L590 355" fill="none" stroke="#f5a900" stroke-width="9"/>
 <path d="M85 125 H205 V250 H105 Z" fill="#e9a52c"/>
 <path d="M100 145 H185 V230 H115 Z" fill="#55b3d0"/>
-<path d="M210 85 H420" fill="none" stroke="#080808" stroke-width="8"/>
-<path d="M110 260 Q160 250 220 270" fill="none" stroke="#080808" stroke-width="9"/>
-<circle cx="255" cy="150" r="7" fill="#080808" stroke="none"/>
-<circle cx="390" cy="150" r="7" fill="#080808" stroke="none"/>
-<circle cx="390" cy="230" r="7" fill="#080808" stroke="none"/>
-<circle cx="120" cy="350" r="6" fill="#080808" stroke="none"/>
-<circle cx="490" cy="350" r="6" fill="#080808" stroke="none"/>
 </g>
 </svg>
 </div>
 
-<!-- Parkplatz -->
 <div class="parking">
 <div class="parking-slot">🚜 Traktor-Parkplatz</div>
 <div class="parking-slot">🌾 Mähdrescher-Parkplatz</div>
@@ -161,61 +140,53 @@ select{background:#edf4e7;color:#263b20;width:100%;margin:5px 0 10px}
 
 <section class="controls">
 <h2 id="chosen">Feld 1 ausgewählt</h2>
-<div id="status">Wähle ein Feld und fahre den Traktor hin.</div>
+<div id="status">Wähle ein Feld.</div>
 <div class="progress"><div class="bar" id="bar"></div></div>
 <div class="note" id="timer"></div>
 
-<h3>🚜 Traktor steuern</h3>
+<h3>🚜 Traktor</h3>
 <div class="row">
-<button onclick="driveTractor()">🚜 Traktor zum Feld fahren</button>
-<button onclick="plow()">🌱 Pflügen starten (15 s)</button>
-<button class="alt" onclick="parkTractor()">🅿️ Traktor parken</button>
+<button onclick="driveTractor()">Zum Feld fahren</button>
+<button onclick="plow()">Pflügen (15 s)</button>
+<button class="alt" onclick="parkTractor()">Parken</button>
 </div>
-<div class="vehicle-info" id="tractorInfo">Traktor steht auf seinem Parkplatz.</div>
+<div class="info" id="tractorInfo">Traktor geparkt.</div>
 
-<h3>🌾 Mähdrescher steuern</h3>
+<h3>🌾 Mähdrescher</h3>
 <div class="row">
-<button onclick="driveCombine()">🌾 Mähdrescher zum Feld fahren</button>
-<button onclick="harvest()">🌾 Ernte starten</button>
-<button class="alt" onclick="parkCombine()">🅿️ Mähdrescher parken</button>
+<button onclick="driveCombine()">Zum Feld fahren</button>
+<button onclick="harvest()">Ernten</button>
+<button class="alt" onclick="parkCombine()">Parken</button>
 </div>
-<div class="vehicle-info" id="combineInfo">Mähdrescher steht auf seinem Parkplatz.</div>
+<div class="info" id="combineInfo">Mähdrescher geparkt.</div>
 
-<div class="row" style="margin-top:8px">
+<div class="row" style="margin-top:12px">
 <button class="alt" onclick="plant()">🌱 Pflanzen</button>
 <button class="alt" onclick="fertilize()">⚡ Dünger (2 🪙)</button>
-</div>
-<div class="row" style="margin-top:8px">
-<button class="alt" onclick="refresh()">⏱ Aktualisieren</button>
 </div>
 </section>
 
 <section class="shop">
-<h2>🛒 Saatgutladen & Vorrat</h2>
+<h2>🛒 Saatgutladen</h2>
 <select id="seed">
-<option value="carrot">🥕 Karotte – Samen 2 🪙 · Ernte 5 🪙 · 1 Min.</option>
-<option value="corn">🌽 Mais – Samen 5 🪙 · Ernte 12 🪙 · 2 Min.</option>
-<option value="berry">🍓 Erdbeere – Samen 8 🪙 · Ernte 18 🪙 · 3 Min.</option>
-<option value="potato">🥔 Kartoffel – 1 Saatkartoffel aus Vorrat · 2,5 Min.</option>
+<option value="carrot">🥕 Karotte – 2 Münzen · Ernte 5 · 1 Min.</option>
+<option value="corn">🌽 Mais – 5 Münzen · Ernte 12 · 2 Min.</option>
+<option value="berry">🍓 Erdbeere – 8 Münzen · Ernte 18 · 3 Min.</option>
+<option value="potato">🥔 Kartoffel – Saatkartoffel aus Vorrat · 2,5 Min.</option>
 </select>
 <div id="inventory" class="note"></div>
-<div class="row" style="margin-top:8px">
-<button onclick="buyPotato()">🥔 1 Kartoffel-Saat kaufen (5 🪙)</button>
+<div class="row">
+<button onclick="buyPotato()">🥔 Saatkartoffel kaufen (5 🪙)</button>
+<button class="alt" onclick="sellPotatoes('one')">1 Kartoffel verkaufen</button>
+<button class="alt" onclick="sellPotatoes('all')">Alle verkaufen</button>
 </div>
-<div class="row" style="margin-top:8px">
-<button class="alt" id="sellOne" onclick="sellPotatoes('one')">🥔 1 Kartoffel verkaufen (+2 🪙)</button>
-<button class="alt" id="sellAll" onclick="sellPotatoes('all')">💰 Alle Kartoffeln verkaufen</button>
-</div>
-<p class="note">Verkauf: Jede Kartoffel bringt 2 Münzen. Du kannst einzelne oder alle Kartoffeln verkaufen.</p>
-<p class="note">Kartoffel-Regel: Eine geerntete Pflanze ergibt bis zu 5 Kartoffeln. Eine kannst du wieder einpflanzen. Maximal 30 Kartoffeln im Vorrat.</p>
-<p class="note">Pflügen dauert 15 Sekunden. Dünger kostet 2 Münzen und kann einmal pro Feld und Pflanzzyklus benutzt werden.</p>
-<p class="note">Nach jeder Ernte muss das Feld erneut gepflügt werden. Der Spielstand wird auf diesem Gerät gespeichert.</p>
+<p class="note">Kartoffeln: Eine Pflanze ergibt bis zu 5 Kartoffeln. Eine kann wieder eingepflanzt werden. Maximal 30 im Vorrat.</p>
+<p class="note">Dünger: einmal pro Feld und Pflanzzyklus. Reduziert die restliche Wachstumszeit um 25 %.</p>
 </section>
 </main>
 
 <script>
 const PLOW_TIME=15000;
-
 const crops={
  carrot:{name:"Karotte",emoji:"🥕",price:2,reward:5,time:60000},
  corn:{name:"Mais",emoji:"🌽",price:5,reward:12,time:120000},
@@ -224,90 +195,43 @@ const crops={
 };
 
 let saved;
-try{
- saved=JSON.parse(localStorage.getItem("farm2dSave"));
-}catch(e){}
-
+try{saved=JSON.parse(localStorage.getItem("farm2dSave"))}catch(e){}
 let coins=saved?.coins??30;
 let harvests=saved?.harvests??0;
 let inventory=saved?.inventory??{potato:0};
-let fields=saved?.fields??Array.from(
- {length:10},
- ()=>({tilled:false,plowing:null,plant:null,fertilized:false})
-);
+let fields=saved?.fields??Array.from({length:10},()=>({tilled:false,plowing:null,plant:null,fertilized:false}));
 fields=fields.map(f=>({...f,fertilized:!!f.fertilized}));
 
-let selected=0;
-let tractorPosition=null;
-let combinePosition=null;
+let selected=0,tractorPosition=null,combinePosition=null;
+let tractorMoving=false,combineMoving=false;
 const $=id=>document.getElementById(id);
+const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+
+function anyFieldPlowing(){
+ return fields.some(f=>!!f.plowing);
+}
+
+// Alte Spielstände mit mehreren gleichzeitigen Pflugvorgängen bereinigen.
+const firstPlowing=fields.findIndex(f=>!!f.plowing);
+if(firstPlowing>=0){
+ fields.forEach((f,i)=>{
+  if(i!==firstPlowing)f.plowing=null;
+ });
+}
 
 function save(){
- localStorage.setItem("farm2dSave",JSON.stringify({
-  coins,harvests,inventory,fields
- }));
+ localStorage.setItem("farm2dSave",JSON.stringify({coins,harvests,inventory,fields}));
 }
 
 function left(start,duration){
  return Math.max(0,Math.ceil((duration-(Date.now()-start))/1000));
 }
 
-function moveVehicle(id,i){
- let vehicle=$(id);
- let plot=$("fieldgrid").children[i];
- if(!plot)return;
-
- let worldRect=$("world").getBoundingClientRect();
- let plotRect=plot.getBoundingClientRect();
- let left=plotRect.left-worldRect.left+(plotRect.width-vehicle.offsetWidth)/2;
- let top=plotRect.top-worldRect.top+(plotRect.height-vehicle.offsetHeight)/2;
-
- vehicle.style.bottom="auto";
- vehicle.style.left=Math.max(0,Math.min(left,worldRect.width-vehicle.offsetWidth))+"px";
- vehicle.style.top=Math.max(0,Math.min(top,worldRect.height-vehicle.offsetHeight-78))+"px";
-}
-
-function driveTractor(){
- tractorPosition=selected;
- moveVehicle("tractor",selected);
- $("tractorInfo").textContent="🚜 Traktor ist bei Feld "+(selected+1)+".";
-}
-
-function driveCombine(){
- combinePosition=selected;
- moveVehicle("combine",selected);
- $("combineInfo").textContent="🌾 Mähdrescher ist bei Feld "+(selected+1)+".";
-}
-
-function parkVehicle(id){
- let vehicle=$(id);
- vehicle.style.top="auto";
- vehicle.style.bottom="8px";
- vehicle.style.left=id==="tractor"?"7%":"57%";
-}
-
-function parkTractor(){
- tractorPosition=null;
- parkVehicle("tractor");
- $("tractorInfo").textContent="🚜 Traktor steht auf seinem Parkplatz.";
-}
-
-function parkCombine(){
- combinePosition=null;
- parkVehicle("combine");
- $("combineInfo").textContent="🌾 Mähdrescher steht auf seinem Parkplatz.";
-}
-
 function render(){
  $("coins").textContent=coins;
  $("harvests").textContent=harvests;
  $("planted").textContent=fields.filter(f=>f.plant).length;
-
- let potatoCount=inventory.potato||0;
- $("inventory").textContent="🥔 Kartoffeln im Vorrat: "+potatoCount+" / 30";
- $("sellOne").disabled=potatoCount<1;
- $("sellAll").disabled=potatoCount<1;
- $("sellAll").textContent="💰 Alle Kartoffeln verkaufen (+"+(potatoCount*2)+" 🪙)";
+ $("inventory").textContent="🥔 Kartoffeln im Vorrat: "+(inventory.potato||0)+" / 30";
 
  $("fieldgrid").innerHTML="";
  fields.forEach((f,i)=>{
@@ -334,24 +258,20 @@ function render(){
   $("fieldgrid").appendChild(b);
  });
 
- let f=fields[selected];
- let status="Wiese – zuerst mit dem Traktor pflügen.";
- let p=0,t="Wähle ein Fahrzeug und fahre zum Feld.";
-
+ let f=fields[selected],status="Wiese – zuerst pflügen.",p=0,t="";
  $("chosen").textContent="Feld "+(selected+1)+" ausgewählt";
 
  if(f.plowing){
-  let e=Date.now()-f.plowing;
   status="🚜 Der Traktor pflügt.";
-  p=Math.min(100,e/PLOW_TIME*100);
+  p=Math.min(100,(Date.now()-f.plowing)/PLOW_TIME*100);
   t="Noch "+left(f.plowing,PLOW_TIME)+" Sekunden";
  }else if(f.plant){
   let c=crops[f.plant.type];
   let e=Date.now()-f.plant.started;
   let l=left(f.plant.started,f.plant.duration);
-  status=c.emoji+" "+c.name+(l===0?" ist erntereif!":" wächst.")+(f.fertilized?" · gedüngt":"");
+  status=c.emoji+" "+c.name+(l===0?" ist erntereif!":" wächst.");
   p=Math.min(100,e/f.plant.duration*100);
-  t=l===0?"Mähdrescher zum Feld fahren und ernten!":"Noch "+l+" Sekunden";
+  t=l===0?"Mähdrescher zum Feld fahren!":"Noch "+l+" Sekunden";
  }else if(f.tilled){
   status="Gepflügter Acker – bereit zum Säen.";
  }
@@ -361,6 +281,155 @@ function render(){
  $("timer").textContent=t;
 }
 
+async function moveVehicle(id,index){
+ const vehicle=$(id);
+ const plot=$("fieldgrid").children[index];
+ if(!plot)return false;
+
+ if(id==="tractor"?tractorMoving:combineMoving)return false;
+
+ if(id==="tractor")tractorMoving=true;
+ else combineMoving=true;
+
+ const wr=$("world").getBoundingClientRect();
+ const pr=plot.getBoundingClientRect();
+ const w=vehicle.offsetWidth;
+ const h=vehicle.offsetHeight;
+
+ const targetX=Math.max(0,Math.min(pr.left-wr.left+(pr.width-w)/2,wr.width-w));
+ const targetY=Math.max(0,Math.min(pr.top-wr.top+(pr.height-h)/2,wr.height-h-82));
+ const centerX=wr.width/2-w/2;
+ const accessY=wr.height-82-11-h/2;
+ const roadY=wr.height*.48-h/2;
+ const wasParked=id==="tractor"?tractorPosition===null:combinePosition===null;
+
+ const vr=vehicle.getBoundingClientRect();
+ const currentX=vr.left-wr.left;
+ const currentY=vr.top-wr.top;
+
+ vehicle.style.bottom="auto";
+ vehicle.style.left=currentX+"px";
+ vehicle.style.top=currentY+"px";
+ void vehicle.offsetHeight;
+
+ if(wasParked){
+  vehicle.style.top=accessY+"px";
+  await sleep(3100);
+
+  vehicle.style.left=centerX+"px";
+  await sleep(3100);
+ }
+
+ vehicle.style.top=roadY+"px";
+ await sleep(3100);
+
+ vehicle.style.left=targetX+"px";
+ await sleep(3100);
+
+ vehicle.style.top=targetY+"px";
+ await sleep(3100);
+
+ if(id==="tractor")tractorMoving=false;
+ else combineMoving=false;
+
+ return true;
+}
+
+async function driveTractor(){
+ if(anyFieldPlowing()){
+  alert("Der Traktor muss beim Pflügen bleiben. Warte, bis das Feld fertig ist.");
+  return;
+ }
+
+ if(tractorMoving)return;
+
+ const target=selected;
+ $("tractorInfo").textContent="Traktor fährt langsam zu Feld "+(target+1)+" …";
+
+ const arrived=await moveVehicle("tractor",target);
+
+ if(arrived){
+  tractorPosition=target;
+  $("tractorInfo").textContent="Traktor steht bei Feld "+(target+1)+".";
+ }
+}
+
+async function driveCombine(){
+ if(combineMoving)return;
+
+ const target=selected;
+ $("combineInfo").textContent="Mähdrescher fährt langsam zu Feld "+(target+1)+" …";
+
+ const arrived=await moveVehicle("combine",target);
+
+ if(arrived){
+  combinePosition=target;
+  $("combineInfo").textContent="Mähdrescher steht bei Feld "+(target+1)+".";
+ }
+}
+
+async function parkVehicle(id){
+ const v=$(id);
+
+ if(id==="tractor")tractorMoving=true;
+ else combineMoving=true;
+
+ const wr=$("world").getBoundingClientRect();
+ const w=v.offsetWidth;
+ const h=v.offsetHeight;
+
+ const centerX=wr.width/2-w/2;
+ const roadY=wr.height*.48-h/2;
+ const accessY=wr.height-82-11-h/2;
+ const parkX=id==="tractor"?wr.width*.05:wr.width*.57;
+
+ const vr=v.getBoundingClientRect();
+
+ v.style.bottom="auto";
+ v.style.left=(vr.left-wr.left)+"px";
+ v.style.top=(vr.top-wr.top)+"px";
+ void v.offsetHeight;
+
+ v.style.top=roadY+"px";
+ await sleep(3100);
+
+ v.style.left=centerX+"px";
+ await sleep(3100);
+
+ v.style.top=accessY+"px";
+ await sleep(3100);
+
+ v.style.left=parkX+"px";
+ await sleep(3100);
+
+ v.style.top="auto";
+ v.style.bottom="8px";
+
+ if(id==="tractor")tractorMoving=false;
+ else combineMoving=false;
+}
+
+async function parkTractor(){
+ if(anyFieldPlowing()){
+  alert("Der Traktor kann während des Pflügens nicht weggefahren werden.");
+  return;
+ }
+
+ if(tractorMoving)return;
+
+ await parkVehicle("tractor");
+ tractorPosition=null;
+ $("tractorInfo").textContent="Traktor ist geparkt.";
+}
+
+async function parkCombine(){
+ if(combineMoving)return;
+
+ await parkVehicle("combine");
+ combinePosition=null;
+ $("combineInfo").textContent="Mähdrescher ist geparkt.";
+}
+
 function refresh(){
  fields.forEach(f=>{
   if(f.plowing&&Date.now()-f.plowing>=PLOW_TIME){
@@ -368,6 +437,7 @@ function refresh(){
    f.tilled=true;
   }
  });
+
  save();
  render();
 }
@@ -375,14 +445,26 @@ function refresh(){
 function plow(){
  let f=fields[selected];
 
- if(tractorPosition!==selected){
-  alert("Fahre zuerst den Traktor zu diesem Feld!");
+ if(tractorMoving){
+  alert("Warte, bis der Traktor am Feld angekommen ist.");
   return;
  }
+
+ if(anyFieldPlowing()){
+  alert("Es kann immer nur ein Feld gleichzeitig gepflügt werden.");
+  return;
+ }
+
+ if(tractorPosition!==selected){
+  alert("Fahre zuerst den Traktor zum Feld!");
+  return;
+ }
+
  if(f.tilled||f.plant||f.plowing){
   alert("Dieses Feld kann gerade nicht gepflügt werden.");
   return;
  }
+
  f.plowing=Date.now();
  save();
  render();
@@ -394,12 +476,13 @@ function plant(){
  let c=crops[type];
 
  if(!f.tilled||f.plant||f.plowing){
-  alert("Das Feld muss fertig gepflügt und frei sein.");
+  alert("Das Feld muss fertig gepflügt sein.");
   return;
  }
+
  if(type==="potato"){
   if((inventory.potato||0)<1){
-   alert("Du hast keine Kartoffeln im Vorrat. Kaufe zuerst eine Saatkartoffel.");
+   alert("Kaufe zuerst eine Saatkartoffel.");
    return;
   }
   inventory.potato--;
@@ -418,14 +501,11 @@ function plant(){
 }
 
 function buyPotato(){
- if((inventory.potato||0)>=30){
-  alert("Dein Kartoffel-Vorrat ist bereits voll (30).");
+ if((inventory.potato||0)>=30||coins<5){
+  alert("Nicht möglich: Vorrat voll oder zu wenig Münzen.");
   return;
  }
- if(coins<5){
-  alert("Du brauchst 5 Münzen.");
-  return;
- }
+
  coins-=5;
  inventory.potato++;
  save();
@@ -433,35 +513,39 @@ function buyPotato(){
 }
 
 function sellPotatoes(amount){
- let available=inventory.potato||0;
- if(available<1){
-  alert("Du hast keine Kartoffeln zum Verkaufen.");
+ let n=inventory.potato||0;
+
+ if(n<1){
+  alert("Keine Kartoffeln vorhanden.");
   return;
  }
- let quantity=amount==="all"?available:1;
- inventory.potato-=quantity;
- coins+=quantity*2;
+
+ let q=amount==="all"?n:1;
+ inventory.potato-=q;
+ coins+=q*2;
  save();
  render();
 }
 
 function fertilize(){
  let f=fields[selected];
+
  if(!f.plant){
-  alert("Auf diesem Feld wächst gerade nichts.");
-  return;
- }
- if(f.fertilized){
-  alert("Dieses Feld wurde in diesem Pflanzzyklus bereits gedüngt.");
-  return;
- }
- if(coins<2){
-  alert("Nicht genug Münzen!");
+  alert("Hier wächst nichts.");
   return;
  }
 
- let elapsed=Date.now()-f.plant.started;
- let remaining=Math.max(0,f.plant.duration-elapsed);
+ if(f.fertilized){
+  alert("Dieses Feld wurde bereits gedüngt.");
+  return;
+ }
+
+ if(coins<2){
+  alert("Nicht genug Münzen.");
+  return;
+ }
+
+ let remaining=Math.max(0,f.plant.duration-(Date.now()-f.plant.started));
  f.plant.started=Date.now();
  f.plant.duration=Math.ceil(remaining*.75);
  f.fertilized=true;
@@ -474,22 +558,24 @@ function harvest(){
  let f=fields[selected];
 
  if(combinePosition!==selected){
-  alert("Fahre zuerst den Mähdrescher zu diesem Feld!");
+  alert("Fahre zuerst den Mähdrescher zum Feld!");
   return;
  }
+
  if(!f.plant){
-  alert("Auf diesem Feld wächst nichts.");
+  alert("Hier wächst nichts.");
   return;
  }
+
  if(Date.now()-f.plant.started<f.plant.duration){
-  alert("Die Pflanze ist noch nicht fertig.");
+  alert("Die Pflanze ist noch nicht reif.");
   return;
  }
 
  if(f.plant.type==="potato"){
   let gained=Math.min(5,30-(inventory.potato||0));
   inventory.potato=(inventory.potato||0)+gained;
-  alert("Du hast "+gained+" Kartoffeln geerntet! Du kannst eine davon wieder einpflanzen.");
+  alert(gained+" Kartoffeln geerntet!");
  }else{
   coins+=crops[f.plant.type].reward;
  }
@@ -498,17 +584,36 @@ function harvest(){
  f.plant=null;
  f.tilled=false;
  f.fertilized=false;
+
  save();
  render();
 }
 
+function setVehicleParked(id){
+ const v=$(id);
+ const wr=$("world").getBoundingClientRect();
+
+ v.style.transition="none";
+ v.style.top="auto";
+ v.style.bottom="8px";
+ v.style.left=(id==="tractor"?wr.width*.05:wr.width*.57)+"px";
+
+ requestAnimationFrame(()=>{
+  v.style.transition="left 3s linear,top 3s linear";
+ });
+}
+
 render();
-parkTractor();
-parkCombine();
+setVehicleParked("tractor");
+setVehicleParked("combine");
 
 window.addEventListener("resize",()=>{
- if(tractorPosition!==null)moveVehicle("tractor",tractorPosition);
- if(combinePosition!==null)moveVehicle("combine",combinePosition);
+ if(tractorPosition!==null&&!tractorMoving){
+  moveVehicle("tractor",tractorPosition);
+ }
+ if(combinePosition!==null&&!combineMoving){
+  moveVehicle("combine",combinePosition);
+ }
 });
 
 setInterval(refresh,1000);
